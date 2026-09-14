@@ -97,5 +97,3 @@ MIT — see [LICENSE](LICENSE).
 ## Support
 
 Loocator is free forever and carries no ads. If you'd like to support server costs, you can do so via **[Ko-fi](https://ko-fi.com/minecode)**.
-
-**Contact:** [info@loocator.org](mailto:info@loocator.org)
