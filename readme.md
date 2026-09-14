@@ -1,6 +1,6 @@
 # Loocator
 
-[![Live App](https://img.shields.io/badge/Live_App-loocator.org-0d9488?style=for-the-badge)](https://loocator.org) [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE) [![Ko-fi Support](https://img.shields.io/badge/Support_me_on-Ko--fi-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/minecode) [![Email](https://img.shields.io/badge/Email-info@loocator.org-0d9488?style=for-the-badge&logo=minutemailer&logoColor=white)](mailto:info@loocator.org)
+[![Live App](https://img.shields.io/badge/Live_App-app.loocator.org-0d9488?style=for-the-badge)](https://app.loocator.org) [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE) [![Ko-fi Support](https://img.shields.io/badge/Support_me_on-Ko--fi-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/minecode) [![Email](https://img.shields.io/badge/Email-info@loocator.org-0d9488?style=for-the-badge&logo=minutemailer&logoColor=white)](mailto:info@loocator.org)
 
 Loocator is a free, open-source Progressive Web App that helps people find public and accessible toilets worldwide — regular restrooms, "Eurokey" wheelchair-accessible facilities, and baby-changing tables — using live [OpenStreetMap](https://www.openstreetmap.org) data. No registration, no tracking, no ads.
 
