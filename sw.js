@@ -1,4 +1,4 @@
-const CACHE_NAME = 'loocator-cache-v13';
+const CACHE_NAME = 'loocator-cache-v14';
 const TILE_CACHE_NAME = 'loocator-tiles-v1';
 const TILE_CACHE_MAX_ENTRIES = 600;
 const OFFLINE_URLS = [

@@ -1238,7 +1238,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     function updateSheetState() {
         if (sheetState === 0) {
-            bottomSheetEl.style.transform = 'translateY(100%)';
+            bottomSheetEl.style.transform = 'translateY(calc(100% + 2rem))'; // + Abstand: md:mb-4 und Schatten dürfen nicht hervorschauen
             bottomSheetEl.style.overflowY = 'hidden';
             if (routingLine) { map.removeLayer(routingLine); routingLine = null; }
         } else if (sheetState === 1) {
