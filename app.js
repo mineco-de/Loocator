@@ -418,7 +418,9 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 // Platzhalter-Style (nur Hintergrundfarbe), der echte Style kommt per applyMapTheme()
                 const placeholder = { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': MAP_PALETTES[currentMapTheme()].background } }] };
-                const vec = L.maplibreGL({ style: placeholder, attribution: OSM_ATTRIBUTION });
+                // Das Plugin ignoriert die Leaflet-Option 'attribution' und leitet den Text aus dem Style ab -
+                // (fehlt anfangs und enthält nicht unseren Credit). customAttribution setzt ihn fest.
+                const vec = L.maplibreGL({ style: placeholder, attributionControl: { customAttribution: OSM_ATTRIBUTION } });
                 isVectorBase = true;
                 vec.on('add', applyMapTheme);
                 return vec;
@@ -436,7 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     layerOSM = createBaseLayer();
     const layerSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri'
+        attribution: 'Tiles &copy; Esri | Loocator by <a href="https://mineco.de" target="_blank" rel="noopener">Adam Weiß</a>'
     });
     layerOSM.addTo(map);
 
