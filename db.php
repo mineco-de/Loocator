@@ -18,6 +18,18 @@ function loocator_db(): PDO {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )");
 
+        // Migration für bestehende Datenbanken (CREATE TABLE IF NOT EXISTS ändert keine vorhandene Tabelle):
+        // source = 'near' (Vor-Ort-Stimme) oder 'followup' (Stimme nach der Nachfrage "Hast du diese Toilette aufgesucht?").
+        $voteColumns = $db->query("PRAGMA table_info(votes)")->fetchAll(PDO::FETCH_COLUMN, 1);
+        if (!in_array('source', $voteColumns, true)) {
+            try {
+                $db->exec("ALTER TABLE votes ADD COLUMN source TEXT DEFAULT 'near'");
+            } catch (PDOException $e) {
+                // Ein paralleler Request war schneller ("duplicate column name"): dann ist alles in Ordnung.
+                if (stripos($e->getMessage(), 'duplicate column') === false) throw $e;
+            }
+        }
+
         $db->exec("CREATE TABLE IF NOT EXISTS rate_limits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ip TEXT NOT NULL,

@@ -491,6 +491,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let locationMarker = null;
     let searchMarker = null;
     let activeMarkers = [];
+    let pendingOpenId = null; // Toilette, deren Detailansicht nach dem Laden der Marker geöffnet werden soll
     let currentToiletData = null;
     let isTooFarToVote = false;
     let isFetching = false;
@@ -989,6 +990,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const { isLikelyClosedNow } = window.LoocatorLib.openingHours;
     // Toilet-Klassifizierung (Filter/Marker-Farbe) lebt (mit Tests) in src/lib/toiletRules.js
     const ToiletRules = window.LoocatorLib.toiletRules;
+    // Nachfrage "Hast du diese Toilette aufgesucht?" (Grenzen/Regeln mit Tests) lebt in src/lib/visitFollowUp.js
+    const VisitFollowUp = window.LoocatorLib.visitFollowUp;
 
     let fetchTimeout;
     map.on('moveend', () => {
@@ -1008,6 +1011,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById('tutorial-modal').classList.remove('hidden');
                 toggleMenu(false);
             }
+            setTimeout(maybeShowFollowUp, 1200);
         }
     }
 
@@ -1222,6 +1226,8 @@ document.addEventListener("DOMContentLoaded", () => {
             markerClusterGroup.addLayer(marker);
             activeMarkers.push(marker);
         });
+
+        flushPendingOpen();
     }
 
     map.on('click', () => {
@@ -1421,6 +1427,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tags['addr:postcode']) cityStr.push(tags['addr:postcode']);
         if (tags['addr:city']) cityStr.push(tags['addr:city']);
         if (cityStr.length > 0) addressParts.push(cityStr.join(' '));
+        rememberLastOpened(toilet, baseType, addressParts.join(', '), lat, lon);
 
         if (addressParts.length > 0) {
             addressEl.innerText = addressParts.join(', ');
@@ -1559,7 +1566,7 @@ document.addEventListener("DOMContentLoaded", () => {
         sheetState = 1;
         updateSheetState();
 
-        isTooFarToVote = !isNearToilet();
+        isTooFarToVote = !canVote();
         const tooFar = isTooFarToVote;
         updateVoteUIState(tooFar);
 
@@ -1641,6 +1648,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return dist !== null && dist <= maxMeters;
     }
 
+    // Bewerten darf man in der Nähe (150 m) ODER wenn man die Nachfrage "Ja, war dort" für genau
+    // diese Toilette bestätigt hat (bis 14 Tage, danach gilt wieder die 150-m-Regel).
+    function canVote() {
+        if (isNearToilet()) return true;
+        return Boolean(currentToiletData)
+            && VisitFollowUp.canVoteRemotely(readStorageObject(VISITED_KEY), currentToiletData.id, Date.now());
+    }
+
     // Statt die Bewertungs-Karte interaktiv aussehen zu lassen und den Nutzer erst NACH
     // dem Tippen mit einem harten "Verboten"-Overlay abzuweisen, zeigen wir proaktiv einen
     // warmen Hinweis mit der tatsächlichen Distanz - Fehlervermeidung statt Fehlerreaktion.
@@ -1660,10 +1675,15 @@ document.addEventListener("DOMContentLoaded", () => {
             b.disabled = tooFar;
         });
 
+        // Freigabe durch "Ja, war dort": Bewertung ist möglich, obwohl man weit weg ist.
+        const viaFollowUp = !tooFar && !isNearToilet();
+
         if (voteControls) voteControls.classList.toggle('hidden', tooFar);
         if (voteHint) {
-            voteHint.classList.toggle('hidden', !tooFar);
-            if (tooFar) {
+            voteHint.classList.toggle('hidden', !tooFar && !viaFollowUp);
+            if (viaFollowUp) {
+                voteHint.querySelector('span').innerText = t('voteFollowUpHint');
+            } else if (tooFar) {
                 const dist = distanceToToilet();
                 const remaining = dist !== null ? Math.max(0, Math.round(dist - maxMeters)) : null;
                 voteHint.querySelector('span').innerText = remaining !== null
@@ -1678,11 +1698,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function sendVote(payload) {
-        if (!isNearToilet()) {
+        if (!canVote()) {
             customAlert(t('alertTooFarToVote'));
         return;
         }
         payload.id = currentToiletData.id;
+        // Stimmen nach "Ja, war dort" (ohne in der Nähe zu sein) werden markiert, damit man sie später filtern kann.
+        payload.source = isNearToilet() ? 'near' : 'followup';
         try {
             await fetch('backend.php', {
                 method: 'POST',
@@ -1725,7 +1747,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const btnYes = document.getElementById('btn-usable-yes');
         const btnNo = document.getElementById('btn-usable-no');
         const starDiv = document.getElementById('star-rating');
-        const tooFar = !isNearToilet();
+        const tooFar = !canVote();
 
         if (tooFar) {
             updateVoteUIState(true);
@@ -1754,6 +1776,134 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
+
+    // --- NACHFRAGE: "Hast du diese Toilette aufgesucht? Wie war's?" ---
+    // Die zuletzt geöffnete Toilette wird lokal gemerkt. Beim nächsten Öffnen der App (oder nach
+    // mindestens 15 min im Hintergrund) fragen wir nach. Wer "Ja, war dort" sagt, darf genau diese
+    // Toilette bewerten - auch aus der Ferne und bei erneutem Aufruf (siehe canVote()).
+    const LAST_OPENED_KEY = 'loocator_last_opened';
+    const VISITED_KEY = 'loocator_visited';
+    const followUpModal = document.getElementById('followup-modal');
+    let followUpToilet = null;
+
+    function readStorageObject(key) {
+        try {
+            const parsed = JSON.parse(localStorage.getItem(key));
+            return parsed && typeof parsed === 'object' ? parsed : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function writeStorageObject(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            // Speicher voll/gesperrt: Nachfrage entfällt, alles andere funktioniert weiter.
+        }
+    }
+
+    function rememberLastOpened(toilet, title, address, lat, lon) {
+        writeStorageObject(LAST_OPENED_KEY, {
+            id: toilet.id,
+            title: title,
+            name: (toilet.tags && toilet.tags.name) || '',
+            address: address,
+            lat: lat,
+            lon: lon,
+            ts: Date.now()
+        });
+    }
+
+    function maybeShowFollowUp() {
+        if (!followUpModal || !followUpModal.classList.contains('hidden')) return;
+        if (!document.getElementById('tutorial-modal').classList.contains('hidden')) return;
+
+        const last = readStorageObject(LAST_OPENED_KEY);
+        const visited = readStorageObject(VISITED_KEY);
+        const voted = readStorageObject('loocator_voted');
+        if (!VisitFollowUp.shouldPromptFollowUp(last, visited, voted, Date.now())) return;
+
+        followUpToilet = last;
+        const place = [last.name, last.address].filter(Boolean).join(', ') || last.title || '';
+        document.getElementById('followup-body').innerText = t('followUpBody', { place: place });
+        followUpModal.classList.remove('hidden');
+        document.getElementById('btn-followup-yes').focus();
+    }
+
+    function hideFollowUp() {
+        followUpModal.classList.add('opacity-0');
+        setTimeout(() => {
+            followUpModal.classList.add('hidden');
+            followUpModal.classList.remove('opacity-0');
+        }, 300);
+    }
+
+    // Öffnet die Detailansicht einer Toilette anhand ihrer ID, unabhängig von den aktiven Filtern.
+    function openToiletById(id) {
+        const toilet = allToilets.find(item => item.id === id);
+        if (!toilet) return false;
+        const tags = toilet.tags;
+        const lat = toilet.lat || (toilet.center && toilet.center.lat);
+        const lon = toilet.lon || (toilet.center && toilet.center.lon);
+        if (!lat || !lon) return false;
+        const isExplicitEurokey = ToiletRules.isExplicitEurokey(tags);
+        const isWheelchair = ToiletRules.isWheelchairAccessible(tags);
+        const { isDefect, isTopRated } = ToiletRules.classifyRating(globalRatingsDb[toilet.id]);
+        openSheet(toilet, isExplicitEurokey || isWheelchair, isExplicitEurokey, isWheelchair,
+            ToiletRules.isOpen247(tags), ToiletRules.hasChangingTable(tags), isDefect, isTopRated, lat, lon);
+        return true;
+    }
+
+    // Wird nach jedem renderMarkers() aufgerufen: öffnet die vorgemerkte Toilette, sobald ihre Daten da sind.
+    function flushPendingOpen() {
+        if (pendingOpenId === null) return false;
+        const opened = openToiletById(pendingOpenId);
+        if (opened) pendingOpenId = null;
+        return opened;
+    }
+
+    document.getElementById('btn-followup-yes').addEventListener('click', () => {
+        if (!followUpToilet) return;
+        const target = followUpToilet;
+        followUpToilet = null;
+
+        const visited = readStorageObject(VISITED_KEY) || {};
+        visited[target.id] = { confirmedAt: Date.now() };
+        writeStorageObject(VISITED_KEY, visited);
+        localStorage.removeItem(LAST_OPENED_KEY);
+        hideFollowUp();
+
+        // Karte zur Toilette bringen und ihre Detailansicht öffnen (Bewertungsfelder sind freigeschaltet).
+        pendingOpenId = target.id;
+        setTimeout(() => { pendingOpenId = null; }, 20000); // Daten kamen nicht an: nicht später unerwartet öffnen
+        autoFollow = false;
+        updateLocationButtonUI();
+        if (!flushPendingOpen()) {
+            map.setView([target.lat, target.lon], Math.max(map.getZoom(), 17));
+        }
+    });
+
+    function declineFollowUp() {
+        followUpToilet = null;
+        localStorage.removeItem(LAST_OPENED_KEY);
+        hideFollowUp();
+    }
+    document.getElementById('btn-followup-no').addEventListener('click', declineFollowUp);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && followUpModal && !followUpModal.classList.contains('hidden')) declineFollowUp();
+    });
+
+    // PWAs bleiben oft im Speicher: auch beim Zurückkehren nach längerer Pause nachfragen.
+    let hiddenAt = null;
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            hiddenAt = Date.now();
+            return;
+        }
+        if (hiddenAt !== null && Date.now() - hiddenAt >= VisitFollowUp.MIN_AGE_MS) maybeShowFollowUp();
+        hiddenAt = null;
+    });
 
     updateKarmaUI();
     fetchToilets();

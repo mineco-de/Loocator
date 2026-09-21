@@ -139,6 +139,11 @@ const dict = {
         voteDisabledTooFar: "Zu weit entfernt zum Bewerten",
         voteOverlayText: "Du musst dich innerhalb von 150 m befinden, um das WC bewerten zu können.",
         voteDistanceHint: "Noch {dist} m näher ran, dann kannst du bewerten.",
+        followUpTitle: "Warst du dort?",
+        followUpBody: "Du hast dir zuletzt diese Toilette angesehen: {place}. Hast du sie aufgesucht? Dann kannst du sie jetzt bewerten.",
+        followUpYes: "Ja, war dort",
+        followUpNo: "Nein",
+        voteFollowUpHint: "Du warst hier. Wie war's? Du kannst diese Toilette jetzt bewerten.",
     },
     'en': {
         appDesc: "Find WCs, Eurokeys & Changing Tables worldwide",
@@ -279,6 +284,11 @@ const dict = {
         voteDisabledTooFar: "Too far away to rate",
         voteOverlayText: "You need to be within 150 m to rate this toilet.",
         voteDistanceHint: "Get {dist} m closer to rate this toilet.",
+        followUpTitle: "Were you there?",
+        followUpBody: "You recently looked at this toilet: {place}. Did you visit it? Then you can rate it now.",
+        followUpYes: "Yes, I was there",
+        followUpNo: "No",
+        voteFollowUpHint: "You were here. How was it? You can rate this toilet now.",
     },
     'fr': {
         appDesc: "Trouvez des toilettes, clés européennes et tables à langer dans le monde entier",
@@ -420,6 +430,11 @@ const dict = {
         voteDisabledTooFar: "Trop loin pour évaluer",
         voteOverlayText: "Vous devez être à moins de 150 m pour évaluer ces toilettes.",
         voteDistanceHint: "Rapprochez-vous de {dist} m pour évaluer ces toilettes.",
+        followUpTitle: "Y êtes-vous allé ?",
+        followUpBody: "Vous avez récemment consulté ces toilettes : {place}. Y êtes-vous allé ? Vous pouvez alors les évaluer maintenant.",
+        followUpYes: "Oui, j'y étais",
+        followUpNo: "Non",
+        voteFollowUpHint: "Vous y étiez. Comment c'était ? Vous pouvez maintenant évaluer ces toilettes.",
     },
     'es': {
         appDesc: "Encuentra aseos, llaves europeas y cambiadores en todo el mundo",
@@ -561,6 +576,11 @@ const dict = {
         voteDisabledTooFar: "Demasiado lejos para valorar",
         voteOverlayText: "Debes estar a menos de 150 m para valorar este aseo.",
         voteDistanceHint: "Acércate {dist} m más para poder valorar este aseo.",
+        followUpTitle: "¿Estuviste allí?",
+        followUpBody: "Hace poco viste este aseo: {place}. ¿Lo usaste? Entonces puedes valorarlo ahora.",
+        followUpYes: "Sí, estuve allí",
+        followUpNo: "No",
+        voteFollowUpHint: "Estuviste aquí. ¿Qué tal? Ahora puedes valorar este aseo.",
     }
 };
 
