@@ -1,0 +1,3 @@
+# /etc/cron.d/loocator-warmcache - wärmt nachts den Overpass-Kachel-Cache der größten Städte (siehe warmcache.php).
+# Läuft nach cleanup.php (03:00). Log: /var/log/loocator-warmcache.log
+30 4 * * * loocator /usr/bin/php /var/www/html/loocator/app/warmcache.php >> /var/log/loocator-warmcache.log 2>&1

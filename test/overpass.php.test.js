@@ -57,7 +57,7 @@ const fail = (status = 500) => (res) => { res.statusCode = status; res.end('nope
 
 async function startPhp(mirrors) {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'loocator-php-'));
-    for (const f of ['overpass.php', 'db.php', 'backend.php']) fs.copyFileSync(path.join(ROOT, f), path.join(dir, f));
+    for (const f of ['overpass.php', 'db.php', 'backend.php', 'warmcache.php']) fs.copyFileSync(path.join(ROOT, f), path.join(dir, f));
     const port = await freePort();
     const proc = spawn('php', ['-S', `127.0.0.1:${port}`, '-t', dir], {
         env: {
@@ -75,6 +75,11 @@ async function startPhp(mirrors) {
     return {
         base,
         dir,
+        env: {
+            ...process.env,
+            LOOCATOR_CACHE_DIR: path.join(dir, 'cache', 'overpass'),
+            LOOCATOR_OVERPASS_MIRRORS: mirrors,
+        },
         get: async (query) => {
             const res = await fetch(`${base}/overpass.php?${query}`);
             return { status: res.status, body: await res.json() };
@@ -245,5 +250,60 @@ test('backend.php: source wird gespeichert, Unbekanntes wird zu "near"', { skip 
         assert.equal(await vote(php, { usable: 'yes' }), 200);                       // alter Client ohne Feld
         assert.equal(await vote(php, { usable: 'yes', source: "x'; DROP TABLE votes;--" }), 200);
         assert.deepEqual(sources(php), ['followup', 'near', 'near', 'near']);
+    });
+});
+
+// --- warmcache.php: Vorwärmen der Städte-Kacheln (CLI) ------------------------------------------------
+
+function runWarm(php, args) {
+    return new Promise((resolve) => {
+        const proc = spawn('php', ['warmcache.php', ...args], { cwd: php.dir, env: php.env });
+        let out = '';
+        proc.stdout.on('data', (d) => { out += d; });
+        proc.on('close', (code) => resolve({ code, out }));
+    });
+}
+const cachedTiles = (php) => fs.readdirSync(path.join(php.dir, 'cache', 'overpass')).filter((f) => f.endsWith('.json'));
+
+test('warmcache.php: holt die Kacheln einer Stadt mit einer Abfrage und lässt frische in Ruhe', { skip }, async () => {
+    const node = { type: 'node', id: 7, lat: 49.007, lon: 8.404, tags: { amenity: 'toilets' } };
+    await withEnv([ok([node])], async (php, mock) => {
+        const dry = await runWarm(php, ['--dry-run', '--only=Karlsruhe']);
+        assert.equal(dry.code, 0);
+        assert.match(dry.out, /Karlsruhe\s+\d+ Kacheln würden geholt/);
+        assert.equal(mock.hits[0], 0, 'Trockenlauf fragt Overpass nicht');
+
+        const first = await runWarm(php, ['--only=Karlsruhe', '--sleep=0']);
+        assert.equal(first.code, 0);
+        assert.match(first.out, /1 Städte geholt/);
+        assert.equal(mock.hits[0], 1, 'eine Abfrage für die ganze Stadt');
+        const files = cachedTiles(php);
+        assert.ok(files.length >= 10, 'viele Kacheln geschrieben: ' + files.length);
+
+        const second = await runWarm(php, ['--only=Karlsruhe', '--sleep=0']);
+        assert.match(second.out, /alle Kacheln frisch/);
+        assert.equal(mock.hits[0], 1, 'frische Kacheln werden nicht erneut geholt');
+
+        // Ein Besucher bekommt die Toilette jetzt aus dem Cache, ohne dass Overpass gefragt wird.
+        const r = await php.get('s=48.99&w=8.39&n=49.02&e=8.42');
+        assert.equal(r.status, 200);
+        assert.deepEqual(ids(r.body), [7]);
+        assert.equal(mock.hits[0], 1);
+    });
+});
+
+test('warmcache.php: Mirror-Ausfall wird gemeldet (Exit 1), nichts wird gecacht', { skip }, async () => {
+    await withEnv([fail(500)], async (php) => {
+        const r = await runWarm(php, ['--only=Karlsruhe', '--sleep=0']);
+        assert.equal(r.code, 1);
+        assert.match(r.out, /FEHLGESCHLAGEN/);
+        assert.equal(cachedTiles(php).length, 0);
+    });
+});
+
+test('warmcache.php: per HTTP nicht aufrufbar (403)', { skip }, async () => {
+    await withEnv([ok([])], async (php) => {
+        const res = await fetch(`${php.base}/warmcache.php`);
+        assert.equal(res.status, 403);
     });
 });

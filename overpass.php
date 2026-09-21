@@ -218,6 +218,9 @@ function op_all_fresh(string $dir, array $tiles): bool {
     return true;
 }
 
+// warmcache.php bindet diese Datei nur wegen der Funktionen ein und bearbeitet keine Web-Anfrage.
+if (defined('LOOCATOR_OVERPASS_LIB')) return;
+
 // --- Anfrage validieren -------------------------------------------------------
 $params = [];
 foreach (['s', 'w', 'n', 'e'] as $k) {
