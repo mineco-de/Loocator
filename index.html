@@ -91,6 +91,12 @@
 
         <!-- Hauptfilter: Favoriten, Öffentlich, Eurokey+Rollstuhl, Wickeltisch, Kostenlos -->
         <div class="flex gap-2 pt-1 pb-1 overflow-x-auto snap-x snap-mandatory hide-scrollbar fade-scroll-x -mx-5 px-9 md:flex-wrap md:overflow-visible md:mx-0 md:px-0">
+            <!-- Reduziert die Zahl der auf einen Blick sichtbaren Entscheidungen (siehe Design-Kritik: kognitive
+                 Überladung durch bis zu 8 gleichzeitig sichtbare Filter-Pillen) -->
+            <button id="btn-toggle-more-filters" type="button" aria-expanded="false" class="md:hidden shrink-0 snap-start px-3 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-500 dark:text-gray-400 shadow-md flex items-center justify-center transition-transform">
+                <svg class="w-4 h-4 transition-transform" id="icon-more-filters" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-favorites" class="peer sr-only">
                 <div class="px-4 py-2.5 rounded-full border border-accent-100 dark:border-accent-600/40 bg-cream dark:bg-deep-800 text-accent-500 dark:text-accent-400 text-xs font-bold transition-all peer-checked:bg-accent-600 peer-checked:text-white peer-checked:border-accent-600 shadow-md flex items-center gap-1.5 whitespace-nowrap ml-3">
@@ -131,11 +137,6 @@
                 </div>
             </label>
 
-            <!-- Reduziert die Zahl der auf einen Blick sichtbaren Entscheidungen (siehe Design-Kritik: kognitive
-                 Überladung durch bis zu 8 gleichzeitig sichtbare Filter-Pillen) -->
-            <button id="btn-toggle-more-filters" type="button" aria-expanded="false" class="md:hidden shrink-0 snap-start px-3 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-500 dark:text-gray-400 shadow-md flex items-center justify-center transition-transform">
-                <svg class="w-4 h-4 transition-transform" id="icon-more-filters" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-            </button>
         </div>
 
         <!-- Unterfilter: Jetzt offen, Hohe Erfolgsrate, Unzuverlässige ausblenden - mobil eingeklappt, am Desktop (md+) immer sichtbar -->
