@@ -54,6 +54,13 @@ body {
     padding-bottom: 0;
 }
 
+/* Das Sheet ist eine Flex-Spalte mit max-height und scrollt (overflow-y: auto). Ohne diese Regel
+   schrumpfen Kinder mit overflow:hidden (Bewertungsbox) bei wenig Platz, statt dass gescrollt wird:
+   der Inhalt der Box wird dann abgeschnitten. */
+.bottom-sheet > * {
+    flex-shrink: 0;
+}
+
 .sheet-actions {
     padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 }
