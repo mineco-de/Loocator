@@ -81,6 +81,14 @@ npm test
 
 These modules are written so the *exact same file* runs in the browser (as a plain `<script>`, attached to `window.LoocatorLib`) and under Node (via `require()`) — there's no separate "browser copy" that can drift out of sync with what's tested.
 
+`npm test` also runs integration tests for the PHP backend (`overpass.php` proxy/cache and the `source` of votes in `backend.php`). They start a throwaway `php -S` server against a mocked Overpass and are skipped when `php` is not installed.
+
+The "Were you there?" follow-up prompt has an end-to-end test that drives the real app in Edge or Chrome:
+
+```bash
+npm run test:e2e
+```
+
 ## Contributing
 
 Contributions are welcome, whether that's code, translations, or just reporting a bug.

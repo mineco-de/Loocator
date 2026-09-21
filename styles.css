@@ -194,3 +194,10 @@ html.dark .loo-cluster {
     -webkit-mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 28px), transparent 100%);
     mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 28px), transparent 100%);
 }
+/* Desktop: Die Filter stehen links untereinander und brechen um statt zu scrollen - dann braucht es keinen Fade-Rand. */
+@media (min-width: 768px) {
+    .fade-scroll-x {
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+}

@@ -1,0 +1,6 @@
+{
+  "version": 0.6,
+  "elements": [
+    { "type": "node", "id": 900001, "lat": 49.0069, "lon": 8.4037, "tags": { "amenity": "toilets", "fee": "no", "name": "Testklo am Schloss", "wheelchair": "yes" } }
+  ]
+}
