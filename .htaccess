@@ -23,3 +23,18 @@
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 </IfModule>
+
+# Zugriffsschutz: Datenbank, Logs, Cron-/CLI-Skripte und Entwicklerdateien dürfen nie per Web abrufbar sein.
+# (loocator.sqlite enthält u. a. die Rate-Limit-Tabelle mit IP-Adressen.)
+<FilesMatch "\.(sqlite3?|db|log)$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "^(cleanup|warmcache)\.php$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "^(package(-lock)?\.json|tailwind\.config\.js|greptile\.json|readme\.md|LICENSE)$">
+    Require all denied
+</FilesMatch>
+<IfModule mod_alias.c>
+    RedirectMatch 404 "^/(cron|test|node_modules|\.github)(/|$)"
+</IfModule>
