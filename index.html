@@ -144,21 +144,21 @@
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-open" class="peer sr-only">
                 <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-green-700 peer-checked:text-white peer-checked:border-green-700 shadow-md whitespace-nowrap flex items-center gap-1.5 ml-3">
-                    <span data-i18n="filterOpen"></span>
+                    <span class="inline-flex items-center gap-2"><span class="inline-block w-2.5 h-2.5 rounded-full shrink-0 bg-green-500 ring-1 ring-black/10" aria-hidden="true"></span><span data-i18n="filterOpen"></span></span>
                 </div>
             </label>
 
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-success" class="peer sr-only">
                 <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-success peer-checked:text-white peer-checked:border-success shadow-md whitespace-nowrap flex items-center gap-1.5">
-                    <span data-i18n="filterSuccess"></span>
+                    <span class="inline-flex items-center gap-2"><span class="inline-block w-2.5 h-2.5 rounded-full shrink-0 bg-yellow-400 ring-1 ring-black/10" aria-hidden="true"></span><span data-i18n="filterSuccess"></span></span>
                 </div>
             </label>
 
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-nobad" class="peer sr-only">
                 <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 shadow-md whitespace-nowrap flex items-center gap-1.5">
-                    <span data-i18n="filterNoBad"></span>
+                    <span class="inline-flex items-center gap-2"><span class="inline-block w-2.5 h-2.5 rounded-full shrink-0 bg-red-500 ring-1 ring-black/10" aria-hidden="true"></span><span data-i18n="filterNoBad"></span></span>
                 </div>
             </label>
         </div>
@@ -244,6 +244,7 @@
         <div class="flex flex-col gap-1.5">
             <p data-i18n="SupportMe" class="text-[11px] text-center text-gray-500 dark:text-gray-400 px-1 leading-snug"></p>
             <a href="https://ko-fi.com/minecode" target="_blank" rel="noopener noreferrer" class="bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 px-4 py-2.5 rounded-xl text-sm font-bold text-center active:scale-95 transition-transform flex items-center justify-center gap-2 border border-orange-200 dark:border-orange-800 shadow-sm">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M7 3v2M10 3v2M13 3v2"/></svg>
                 <span data-i18n="btnSupport"></span>
             </a>
         </div>
@@ -251,7 +252,7 @@
         <div class="text-center flex flex-col gap-1.5">
             <div id="app-stats" class="text-[11px] text-gray-500 dark:text-gray-400 font-medium bg-gray-50 dark:bg-gray-700 py-1.5 rounded-lg border border-gray-100 dark:border-gray-600 hidden"></div>
             <a class="text-[10px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors leading-tight">
-                <span class="mt-0.5 inline-block">Made with ❤️ in Rheinstetten</span>
+                <span class="mt-0.5 inline-block">Made with <svg class="inline-block w-3 h-3 -mt-0.5 text-accent-500" viewBox="0 0 24 24" fill="currentColor" aria-label="love" role="img"><path d="M12 21s-8-5.5-8-11.2A4.6 4.6 0 0 1 12 7.2a4.6 4.6 0 0 1 8 2.6C20 15.5 12 21 12 21z"/></svg> in Rheinstetten</span>
             </a>
         </div>
     </div>
@@ -302,7 +303,7 @@
             <span class="text-sm text-brand-800 dark:text-brand-50 leading-snug"></span>
         </div>
         
-        <p id="sheet-info" class="text-sm text-stone-500 dark:text-teal-100/70 mb-5 leading-relaxed"></p>
+        <div id="sheet-info" class="text-sm text-stone-500 dark:text-teal-100/70 mb-5 leading-relaxed flex flex-col gap-0.5"></div>
 
         <div id="feedback-section" class="bg-cream-100 dark:bg-deep-700 rounded-2xl p-5 mb-5 border border-cream-200 dark:border-deep-600 shadow-inner transition-opacity duration-300 relative overflow-hidden">
             <!-- Proaktiver Hinweis statt reaktivem "Verboten"-Overlay: zeigt die tatsächliche

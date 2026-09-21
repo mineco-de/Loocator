@@ -1376,6 +1376,39 @@ document.addEventListener("DOMContentLoaded", () => {
         updateSheetState();
     }
 
+    // Icons für die Info-Zeilen im Detail-Sheet (statt Emoji). Nur feste, eigene Konstanten -> innerHTML unbedenklich.
+    const INFO_ICONS = {
+        'dot-red': '<span class="w-2.5 h-2.5 rounded-full bg-red-500 ring-1 ring-black/10"></span>',
+        'dot-yellow': '<span class="w-2.5 h-2.5 rounded-full bg-yellow-400 ring-1 ring-black/10"></span>',
+        'dot-green': '<span class="w-2.5 h-2.5 rounded-full bg-green-500 ring-1 ring-black/10"></span>',
+        'dot-purple': '<span class="w-2.5 h-2.5 rounded-full bg-purple-500 ring-1 ring-black/10"></span>',
+        'wheelchair': '<svg class="w-4 h-4 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="4.5" r="1.7"/><path d="M10 8v6.5h5.5l2.5 5"/><path d="M10 11.5h4.5"/><path d="M7.6 14.4a4.7 4.7 0 1 0 7 5.6"/></svg>'
+    };
+
+    function renderSheetInfo(lines) {
+        const container = document.getElementById('sheet-info');
+        container.replaceChildren();
+        if (!lines.length) {
+            container.innerText = t('iNone');
+            return;
+        }
+        lines.forEach(line => {
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2';
+            if (line.icon) {
+                const icon = document.createElement('span');
+                icon.className = 'shrink-0 w-4 h-4 flex items-center justify-center';
+                icon.setAttribute('aria-hidden', 'true');
+                icon.innerHTML = INFO_ICONS[line.icon];
+                row.appendChild(icon);
+            }
+            const text = document.createElement('span');
+            text.textContent = line.text;
+            row.appendChild(text);
+            container.appendChild(row);
+        });
+    }
+
     async function openSheet(toilet, isEurokeyOrWheelchair, isExplicitEurokey, isWheelchair, is247, hasChanging, isDefect, isTopRated, lat, lon) {
         currentToiletData = toilet;
         const tags = toilet.tags;
@@ -1553,19 +1586,20 @@ document.addEventListener("DOMContentLoaded", () => {
         else if (tags.female === 'yes') genderInfo = t('accFemale');
         else if (tags.male === 'yes') genderInfo = t('accMale');
 
+        // Jede Zeile: { text, icon? } - Icons sind SVG/CSS statt Emoji, damit sie auf allen Geräten gleich aussehen.
         let info = [];
-        if(isDefect) info.push(t('iDefect'));
-        if(isTopRated && !isDefect) info.push(t('iSuccess'));
-        if(genderInfo) info.push(genderInfo);
+        if(isDefect) info.push({ text: t('iDefect'), icon: 'dot-red' });
+        if(isTopRated && !isDefect) info.push({ text: t('iSuccess'), icon: 'dot-yellow' });
+        if(genderInfo) info.push({ text: genderInfo });
         
-        if(is247) info.push(t('i247'));
-        else if (tags['opening_hours']) info.push(t('iHours') + tags['opening_hours']);
+        if(is247) info.push({ text: t('i247'), icon: 'dot-green' });
+        else if (tags['opening_hours']) info.push({ text: t('iHours') + tags['opening_hours'] });
         
         if(tags.fee || tags['toilets:fee']) {
             let feeVal = tags.fee || tags['toilets:fee'];
             if (feeVal.toLowerCase() === 'yes') feeVal = t('btnYes');
             else if (feeVal.toLowerCase() === 'no') feeVal = t('feeFree');
-            info.push(t('iCost') + feeVal);
+            info.push({ text: t('iCost') + feeVal });
         }
         
         if(!isWheelchair && (tags.wheelchair || tags['toilets:wheelchair'])) {
@@ -1573,12 +1607,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (wheelVal.toLowerCase() === 'yes') wheelVal = t('btnYes');
             else if (wheelVal.toLowerCase() === 'no') wheelVal = t('btnNo');
             else if (wheelVal.toLowerCase() === 'limited') wheelVal = t('accLimited');
-            info.push(t('iWheel') + wheelVal);
+            info.push({ text: t('iWheel') + wheelVal, icon: 'wheelchair' });
         }
         
-        if(hasChanging) info.push(t('iChanging'));
+        if(hasChanging) info.push({ text: t('iChanging'), icon: 'dot-purple' });
 
-        document.getElementById('sheet-info').innerText = info.length ? info.join('\n') : t('iNone');
+        renderSheetInfo(info);
 
         document.getElementById('btn-navigate').onclick = () => {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
