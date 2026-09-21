@@ -322,12 +322,14 @@ document.addEventListener("DOMContentLoaded", () => {
             tunnel: '#EDE6D5', path: '#C2B493', rail: '#DCD2BB', railDash: '#F1EBDC', boundary: '#C9BFA6',
             roadLabel: '#8A8371', roadLabelHalo: '#F1EBDC', placeLabel: '#33443f', placeHalo: '#F5F0E4', waterLabel: '#3F7F7A'
         },
+        // Dark: bewusst neutrales Blaugrau statt Teal-auf-Teal - Straßen und Beschriftungen
+        // brauchen klaren Helligkeitsabstand zum Hintergrund, damit die Karte lesbar bleibt.
         dark: {
-            background: '#0C2521', park: '#14372F', wood: '#11322A', residential: '#0F2B26',
-            water: '#0F3A3E', waterway: '#0F3A3E', building: '#123029', buildingOutline: '#173A33',
-            roadMinor: '#1F4A43', roadMajor: '#28544D', roadCasing: '#0C2521', roadSubtle: '#1B4640',
-            tunnel: '#163a34', path: '#3F7A6F', rail: '#183C36', railDash: '#0C2521', boundary: '#2C5C53',
-            roadLabel: '#7FA9A1', roadLabelHalo: '#0C2521', placeLabel: '#A9CFC7', placeHalo: '#0C2521', waterLabel: '#5FA39B'
+            background: '#1F262B', park: '#243D2F', wood: '#20372A', residential: '#222A2F',
+            water: '#1D3A55', waterway: '#1D3A55', building: '#2A3339', buildingOutline: '#343F46',
+            roadMinor: '#434E55', roadMajor: '#5F6E77', roadCasing: '#1F262B', roadSubtle: '#333E45',
+            tunnel: '#2E383E', path: '#66757C', rail: '#4A555B', railDash: '#1F262B', boundary: '#59666D',
+            roadLabel: '#B4C0C5', roadLabelHalo: '#1F262B', placeLabel: '#EDF2F4', placeHalo: '#1F262B', waterLabel: '#8DB4D6'
         }
     };
 
