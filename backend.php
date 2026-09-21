@@ -70,6 +70,9 @@ try {
 
         if (!$id) die(json_encode(['error' => 'No ID']));
 
+        // Herkunft der Stimme: nur bekannte Werte, sonst wie bisher 'near'
+        $source = ($data['source'] ?? 'near') === 'followup' ? 'followup' : 'near';
+
         // Validierung - nur erlaubte Werte akzeptieren
         if ($usable !== null && !in_array($usable, ['yes', 'no'], true)) {
             $usable = null;
@@ -83,8 +86,8 @@ try {
             die(json_encode(['error' => 'Invalid vote data']));
         }
 
-        $stmt = $db->prepare("INSERT INTO votes (osm_id, usable_vote, cleanliness_vote) VALUES (?, ?, ?)");
-        $stmt->execute([$id, $usable, $cleanliness]);
+        $stmt = $db->prepare("INSERT INTO votes (osm_id, usable_vote, cleanliness_vote, source) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$id, $usable, $cleanliness, $source]);
 
         echo json_encode(['status' => 'success']);
     }

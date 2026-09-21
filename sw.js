@@ -1,4 +1,4 @@
-const CACHE_NAME = 'loocator-cache-v14';
+const CACHE_NAME = 'loocator-cache-v15';
 const TILE_CACHE_NAME = 'loocator-tiles-v1';
 const TILE_CACHE_MAX_ENTRIES = 600;
 const OFFLINE_URLS = [
@@ -12,6 +12,7 @@ const OFFLINE_URLS = [
   'src/lib/openingHours.js',
   'src/lib/karma.js',
   'src/lib/toiletRules.js',
+  'src/lib/visitFollowUp.js',
   'fonts/baloo2-latin.woff2',
   'fonts/baloo2-latin-ext.woff2',
   'img/loocator.svg',
@@ -105,7 +106,8 @@ self.addEventListener('fetch', event => {
     '/sw.js',
     '/src/lib/openingHours.js',
     '/src/lib/karma.js',
-    '/src/lib/toiletRules.js'
+    '/src/lib/toiletRules.js',
+    '/src/lib/visitFollowUp.js'
   ].some(path => requestUrl.pathname.endsWith(path) || requestUrl.pathname === path);
 
   if (isAppAsset) {

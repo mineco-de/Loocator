@@ -439,6 +439,17 @@
         </div>
     </div>
 
+    <div id="followup-modal" class="hidden fixed inset-0 bg-gray-900/80 z-[9000] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="followup-title">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <h2 id="followup-title" class="text-2xl font-display font-black text-brand-600 dark:text-brand-400 mb-2" data-i18n="followUpTitle"></h2>
+            <p id="followup-body" class="text-sm text-gray-600 dark:text-gray-300 mb-6"></p>
+            <div class="flex flex-col gap-3">
+                <button id="btn-followup-yes" class="w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg" data-i18n="followUpYes"></button>
+                <button id="btn-followup-no" class="w-full bg-stone-100 hover:bg-stone-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3.5 rounded-xl transition-colors" data-i18n="followUpNo"></button>
+            </div>
+        </div>
+    </div>
+
     <div id="tutorial-modal" class="hidden fixed inset-0 bg-gray-900/80 z-[9000] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300">
         <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
             <h2 class="text-2xl font-display font-black text-brand-600 dark:text-brand-400 mb-2" data-i18n="tutWelcome"></h2>
@@ -577,6 +588,7 @@
     <script src="src/lib/openingHours.js" defer></script>
     <script src="src/lib/karma.js" defer></script>
     <script src="src/lib/toiletRules.js" defer></script>
+    <script src="src/lib/visitFollowUp.js" defer></script>
 
     <script src="translations.js" defer></script>
     <script src="app.js" defer></script>
