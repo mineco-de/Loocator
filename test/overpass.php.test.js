@@ -307,3 +307,32 @@ test('warmcache.php: per HTTP nicht aufrufbar (403)', { skip }, async () => {
         assert.equal(res.status, 403);
     });
 });
+
+test('Rate-Limit speichert nur pseudonymisierte IPs (kein Klartext), Schlüssel liegt nur lokal', { skip }, async () => {
+    await withEnv([ok([INSIDE])], async (php) => {
+        assert.equal((await php.get(BBOX)).status, 200);
+        const script = "$d=new PDO('sqlite:'.$argv[1]);echo json_encode($d->query('SELECT ip FROM rate_limits')->fetchAll(PDO::FETCH_COLUMN));";
+        const out = spawnSync('php', ['-r', script, path.join(php.dir, 'loocator.sqlite')], { encoding: 'utf8' });
+        const ips = JSON.parse(out.stdout);
+        assert.ok(ips.length >= 1);
+        for (const ip of ips) assert.match(ip, /^[0-9a-f]{16}$/, 'kein Klartext: ' + ip);
+        const key = fs.readFileSync(path.join(php.dir, 'rate_limit.key'), 'utf8');
+        assert.ok(key.length >= 32);
+        assert.ok(!ips.includes('127.0.0.1'));
+    });
+});
+
+test('cleanup.php löscht Alt-Zeilen mit Klartext-IP sofort', { skip }, async () => {
+    await withEnv([ok([])], async (php) => {
+        fs.copyFileSync(path.join(ROOT, 'cleanup.php'), path.join(php.dir, 'cleanup.php'));
+        await php.get(BBOX); // legt DB und einen gehashten Eintrag an
+        const seed = "$d=new PDO('sqlite:'.$argv[1]);$d->exec(\"INSERT INTO rate_limits (ip, action) VALUES ('203.0.113.9','vote'),('2001:db8::1','vote')\");";
+        spawnSync('php', ['-r', seed, path.join(php.dir, 'loocator.sqlite')]);
+        const run = spawnSync('php', ['cleanup.php'], { cwd: php.dir, encoding: 'utf8' });
+        assert.equal(run.status, 0);
+        const script = "$d=new PDO('sqlite:'.$argv[1]);echo json_encode($d->query('SELECT ip FROM rate_limits')->fetchAll(PDO::FETCH_COLUMN));";
+        const ips = JSON.parse(spawnSync('php', ['-r', script, path.join(php.dir, 'loocator.sqlite')], { encoding: 'utf8' }).stdout);
+        assert.ok(ips.length >= 1);
+        assert.ok(ips.every((ip) => /^[0-9a-f]{16}$/.test(ip)), JSON.stringify(ips));
+    });
+});

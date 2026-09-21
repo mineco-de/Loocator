@@ -46,12 +46,37 @@ function loocator_client_ip(): string {
 }
 
 /**
+ * Pseudonymisiert eine IP für die Rate-Limit-Tabelle: HMAC-SHA256 mit einem serverseitigen Schlüssel
+ * (rate_limit.key, wird beim ersten Aufruf zufällig erzeugt, ist per .htaccess gesperrt), gekürzt auf 16 Hex-Zeichen.
+ * Damit stehen in der Datenbank nie Klartext-IPs; für die Begrenzung pro Client reicht der Hash.
+ */
+function loocator_ip_hash(string $ip): string {
+    static $key = null;
+    if ($key === null) {
+        $file = getenv('LOOCATOR_KEY_FILE') ?: (__DIR__ . '/rate_limit.key');
+        $key = @file_get_contents($file);
+        if ($key === false || strlen($key) < 32) {
+            // 'x' = nur anlegen, wenn es die Datei noch nicht gibt (kein Überschreiben bei parallelen Requests)
+            $fh = @fopen($file, 'x');
+            if ($fh) {
+                fwrite($fh, bin2hex(random_bytes(32)));
+                fclose($fh);
+                @chmod($file, 0600);
+            }
+            $key = @file_get_contents($file);
+            if ($key === false || strlen($key) < 32) $key = hash('sha256', __FILE__ . php_uname()); // Notnagel: Schlüsseldatei nicht schreibbar
+        }
+    }
+    return substr(hash_hmac('sha256', $ip, $key), 0, 16);
+}
+
+/**
  * Erlaubt maximal $maxRequests Aufrufe von $action pro IP innerhalb von
  * $windowSeconds. Gibt false zurück, wenn das Limit bereits erreicht ist.
  */
 function loocator_rate_limit(string $action, int $maxRequests, int $windowSeconds): bool {
     $db = loocator_db();
-    $ip = loocator_client_ip();
+    $ip = loocator_ip_hash(loocator_client_ip());
 
     $stmt = $db->prepare("SELECT COUNT(*) FROM rate_limits WHERE ip = ? AND action = ? AND created_at >= datetime('now', ?)");
     $stmt->execute([$ip, $action, "-{$windowSeconds} seconds"]);

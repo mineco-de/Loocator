@@ -9,6 +9,9 @@ try {
     $stmt->execute();
     $deletedVotes = $stmt->rowCount();
 
+    // Altlasten: Zeilen mit Klartext-IP (vor der Pseudonymisierung) sofort löschen. Hashes sind reines Hex ohne '.'/':'.
+    $db->exec("DELETE FROM rate_limits WHERE ip LIKE '%.%' OR ip LIKE '%:%' OR ip = 'unknown'");
+
     $stmt = $db->prepare("DELETE FROM rate_limits WHERE created_at < datetime('now', '-1 day')");
     $stmt->execute();
     $deletedRateLimits = $stmt->rowCount();

@@ -4,3 +4,5 @@ node_modules/
 .impeccable/
 # Serverseitiger Overpass-Cache (overpass.php)
 cache/
+# Schlüssel für die IP-Pseudonymisierung (wird auf dem Server erzeugt)
+rate_limit.key

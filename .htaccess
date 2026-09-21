@@ -26,7 +26,7 @@
 
 # Zugriffsschutz: Datenbank, Logs, Cron-/CLI-Skripte und Entwicklerdateien dürfen nie per Web abrufbar sein.
 # (loocator.sqlite enthält u. a. die Rate-Limit-Tabelle mit IP-Adressen.)
-<FilesMatch "\.(sqlite3?|db|log)$">
+<FilesMatch "\.(sqlite3?|db|log|key)$">
     Require all denied
 </FilesMatch>
 <FilesMatch "^(cleanup|warmcache)\.php$">
