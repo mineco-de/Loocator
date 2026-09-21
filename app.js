@@ -1121,54 +1121,79 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Swipe Logik
-    let startY = 0;
-    let currentY = 0;
-    
-    bottomSheetEl.addEventListener('touchstart', (e) => {
-        if (sheetState === 2 && bottomSheetEl.scrollTop > 0) return; // Erlaube scrollen, wenn voll offen
-        startY = e.touches[0].clientY;
-    }, {passive: true});
+    // Drag-Logik (Maus, Touch, Stift über Pointer Events): Der Griff folgt dem Finger/Zeiger,
+    // beim Loslassen rastet das Sheet auf Stufe 0/1/2 ein. Ein Tap ohne Bewegung
+    // schaltet wie bisher weiter (1 -> 2, 2 -> 0).
+    const SHEET_PEEK_RATIO = 0.55; // muss zu translateY(55%) in updateSheetState passen
+    const SHEET_TAP_SLOP = 6;      // px - darunter gilt die Geste als Tap
+    const SHEET_FLICK_SPEED = 0.5; // px/ms - darüber wird eine Wischgeste zum Stufenwechsel
+    let sheetDrag = null;
 
-    bottomSheetEl.addEventListener('touchmove', (e) => {
-        if (sheetState === 2 && bottomSheetEl.scrollTop > 0) return;
-        currentY = e.touches[0].clientY;
-    }, {passive: true});
+    function sheetOffsetForState(state, height) {
+        return state === 0 ? height : state === 1 ? height * SHEET_PEEK_RATIO : 0;
+    }
 
-    bottomSheetEl.addEventListener('touchend', (e) => {
-        if (sheetState === 2 && bottomSheetEl.scrollTop > 0) return;
-        if (!startY || !currentY) {
-            // Nur geklickt, nicht gewischt
-            if (sheetState === 1 && e.target.closest('#btn-close-sheet')) {
-                sheetState = 2; // Auf den Griff tippen öffnet in Stufe 1 zu Stufe 2
-                updateSheetState();
-            } else if (sheetState === 2 && e.target.closest('#btn-close-sheet')) {
-                sheetState = 0; // Auf Griff tippen schließt komplett aus Stufe 2
-                updateSheetState();
-            }
+    function sheetDragEnd(e, cancelled) {
+        if (!sheetDrag || e.pointerId !== sheetDrag.pointerId) return;
+        const drag = sheetDrag;
+        sheetDrag = null;
+        if (btnCloseSheet.hasPointerCapture(e.pointerId)) btnCloseSheet.releasePointerCapture(e.pointerId);
+        bottomSheetEl.style.transition = '';
+
+        if (cancelled) {
+            updateSheetState();
+            return;
+        }
+        if (!drag.moved) {
+            if (sheetState === 1) sheetState = 2;
+            else if (sheetState === 2) sheetState = 0;
+            updateSheetState();
             return;
         }
 
-        let diff = currentY - startY;
-        if (Math.abs(diff) > 40) {
-            if (diff > 0) {
-                // Nach unten wischen
-                sheetState = (sheetState === 2) ? 1 : 0;
-            } else {
-                // Nach oben wischen
-                if (sheetState === 1) sheetState = 2;
-            }
-            updateSheetState();
+        const height = bottomSheetEl.offsetHeight;
+        const offset = Math.min(Math.max(drag.startOffset + (e.clientY - drag.startY), 0), height);
+        const elapsed = Math.max(e.timeStamp - drag.startTime, 1);
+        const speed = (e.clientY - drag.startY) / elapsed;
+        if (Math.abs(speed) > SHEET_FLICK_SPEED) {
+            // Flick: genau eine Stufe in Wischrichtung
+            sheetState = speed > 0 ? Math.max(sheetState - 1, 0) : Math.min(sheetState + 1, 2);
+        } else {
+            // Langsames Ziehen: nächstliegende Stufe
+            sheetState = [0, 1, 2].reduce((best, st) =>
+                Math.abs(sheetOffsetForState(st, height) - offset) < Math.abs(sheetOffsetForState(best, height) - offset) ? st : best, 2);
         }
-        startY = 0;
-        currentY = 0;
+        updateSheetState();
+    }
+
+    btnCloseSheet.addEventListener('pointerdown', (e) => {
+        if (sheetState === 0 || (e.pointerType === 'mouse' && e.button !== 0)) return;
+        btnCloseSheet.setPointerCapture(e.pointerId);
+        sheetDrag = {
+            pointerId: e.pointerId,
+            startY: e.clientY,
+            startTime: e.timeStamp,
+            startOffset: sheetOffsetForState(sheetState, bottomSheetEl.offsetHeight),
+            moved: false
+        };
     });
 
-    btnCloseSheet.addEventListener('click', () => {
-        if(sheetState === 2) sheetState = 0;
-        else if(sheetState === 1) sheetState = 2;
-        updateSheetState();
+    btnCloseSheet.addEventListener('pointermove', (e) => {
+        if (!sheetDrag || e.pointerId !== sheetDrag.pointerId) return;
+        const dy = e.clientY - sheetDrag.startY;
+        if (!sheetDrag.moved) {
+            if (Math.abs(dy) < SHEET_TAP_SLOP) return;
+            sheetDrag.moved = true;
+            bottomSheetEl.style.transition = 'none';
+            bottomSheetEl.style.overflowY = 'hidden';
+        }
+        const height = bottomSheetEl.offsetHeight;
+        const offset = Math.min(Math.max(sheetDrag.startOffset + dy, 0), height);
+        bottomSheetEl.style.transform = `translateY(${offset}px)`;
     });
+
+    btnCloseSheet.addEventListener('pointerup', (e) => sheetDragEnd(e, false));
+    btnCloseSheet.addEventListener('pointercancel', (e) => sheetDragEnd(e, true));
 
     function closeSheet() {
         sheetState = 0;

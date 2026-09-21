@@ -275,7 +275,10 @@
     <div id="empty-state" class="hidden absolute left-4 right-4 top-44 z-[30] mx-auto max-w-sm rounded-2xl bg-white/95 dark:bg-gray-800/95 px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-100 shadow-lg border border-cream-200 dark:border-deep-600 backdrop-blur-sm"></div>
 
     <div id="bottom-sheet" class="bottom-sheet fixed bottom-0 left-0 right-0 w-full md:max-w-lg md:mx-auto md:mb-4 bg-cream dark:bg-deep-800 text-stone-800 dark:text-teal-50 rounded-t-3xl md:rounded-3xl shadow-[0_-5px_25px_rgba(12,37,33,0.28)] md:shadow-2xl p-6 transform translate-y-full max-h-[85vh] flex flex-col transition-transform duration-300 touch-pan-y">
-        <div class="w-12 h-1.5 bg-cream-200 dark:bg-deep-500 rounded-full mx-auto mb-4 cursor-pointer" id="btn-close-sheet"></div>
+        <!-- Griff: großzügige Trefferfläche über die ganze Sheet-Breite, Drag per Pointer Events (siehe app.js) -->
+        <div id="btn-close-sheet" class="-mx-6 -mt-6 pt-5 pb-4 cursor-grab active:cursor-grabbing touch-none select-none" role="button">
+            <div class="w-12 h-1.5 bg-cream-200 dark:bg-deep-500 rounded-full mx-auto"></div>
+        </div>
         
         <div class="flex justify-between items-start mb-1">
             <h2 id="sheet-title" class="text-2xl font-display font-bold"></h2>
