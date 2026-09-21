@@ -1,6 +1,6 @@
-const CACHE_NAME = 'loocator-cache-v10';
+const CACHE_NAME = 'loocator-cache-v11';
 const TILE_CACHE_NAME = 'loocator-tiles-v1';
-const TILE_CACHE_MAX_ENTRIES = 300;
+const TILE_CACHE_MAX_ENTRIES = 600;
 const OFFLINE_URLS = [
   './',
   'index.html',
@@ -26,7 +26,10 @@ const OFFLINE_URLS = [
 // Map-Kachel-Hosts: Cache-first mit Größenlimit, damit wiederholtes Ansehen
 // derselben Gegend (und ein kurzer Netzwerkausfall) nicht jedes Mal neu
 // nachladen muss.
-const TILE_HOSTS = ['tile.openstreetmap.fr', 'server.arcgisonline.com'];
+const TILE_HOSTS = ['tile.openstreetmap.org', 'server.arcgisonline.com'];
+// OpenFreeMap: nur die Vektorkacheln (/planet/...) cachen - Style-JSON, Fonts und Sprites
+// müssen frisch bleiben bzw. laufen über den normalen Browser-Cache.
+const isOpenFreeMapTile = (url) => url.hostname === 'tiles.openfreemap.org' && url.pathname.startsWith('/planet/');
 
 async function trimTileCache() {
   const cache = await caches.open(TILE_CACHE_NAME);
@@ -65,7 +68,7 @@ self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
   const isSameOrigin = requestUrl.origin === self.location.origin;
 
-  if (TILE_HOSTS.includes(requestUrl.hostname)) {
+  if (TILE_HOSTS.includes(requestUrl.hostname) || isOpenFreeMapTile(requestUrl)) {
     event.respondWith(
       caches.open(TILE_CACHE_NAME).then(cache =>
         cache.match(event.request).then(cached => {

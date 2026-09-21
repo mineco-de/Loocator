@@ -161,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
         htmlTag.classList.remove('dark');
         localStorage.theme = 'light';
         updateThemeUI(false);
+        applyMapTheme();
     });
 
     // Klick auf Dunkel
@@ -168,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         htmlTag.classList.add('dark');
         localStorage.theme = 'dark';
         updateThemeUI(true);
+        applyMapTheme();
     });
 
     const updateModal = document.getElementById('update-modal');
@@ -302,12 +304,137 @@ document.addEventListener("DOMContentLoaded", () => {
             '</div>';
     }
 
-    const map = L.map('map', { zoomControl: false }).setView([49.0069, 8.4037], 14);
-    const layerOSM = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">HOT</a> | Loocator by <a href="https://mineco.de" target="_blank" rel="noopener">Adam Weiß</a>',
-        className: 'osm-tiles'
-    });
+    const map = L.map('map', { zoomControl: false, maxZoom: 19 }).setView([49.0069, 8.4037], 14);
+    // --- Basiskarte: OpenFreeMap (Vektor, ohne Key) im Loocator-Markenlook ---
+    // HOT (tile.openstreetmap.fr/hot) ist nicht mehr zuverlässig und zeichnet Straßen
+    // sehr dominant. Wir laden die OpenFreeMap-Styles (Positron/Dark) und färben sie
+    // per Palette um: leise Straßen, sichtbare Fußwege, warme Creme- bzw. Deep-Teal-Töne.
+    // Zum Nachjustieren nur MAP_PALETTES anpassen.
+    const OFM_STYLE_URLS = {
+        light: 'https://tiles.openfreemap.org/styles/positron',
+        dark: 'https://tiles.openfreemap.org/styles/dark'
+    };
+    const MAP_PALETTES = {
+        light: {
+            background: '#F1EBDC', park: '#DCE7D2', wood: '#D2E0CA', residential: '#EFE8D8',
+            water: '#BBDBD7', waterway: '#A7CFCA', building: '#E7DFCC', buildingOutline: '#DBD1BA',
+            roadMinor: '#FFFFFF', roadMajor: '#FFFFFF', roadCasing: '#E0D6BF', roadSubtle: '#E8E0CD',
+            tunnel: '#EDE6D5', path: '#C2B493', rail: '#DCD2BB', railDash: '#F1EBDC', boundary: '#C9BFA6',
+            roadLabel: '#8A8371', roadLabelHalo: '#F1EBDC', placeLabel: '#33443f', placeHalo: '#F5F0E4', waterLabel: '#3F7F7A'
+        },
+        dark: {
+            background: '#0C2521', park: '#14372F', wood: '#11322A', residential: '#0F2B26',
+            water: '#0F3A3E', waterway: '#0F3A3E', building: '#123029', buildingOutline: '#173A33',
+            roadMinor: '#1F4A43', roadMajor: '#28544D', roadCasing: '#0C2521', roadSubtle: '#1B4640',
+            tunnel: '#163a34', path: '#3F7A6F', rail: '#183C36', railDash: '#0C2521', boundary: '#2C5C53',
+            roadLabel: '#7FA9A1', roadLabelHalo: '#0C2521', placeLabel: '#A9CFC7', placeHalo: '#0C2521', waterLabel: '#5FA39B'
+        }
+    };
+
+    function paintRulesFor(c) {
+        return {
+            background: { 'background-color': c.background },
+            park: { 'fill-color': c.park }, landuse_park: { 'fill-color': c.park },
+            landcover_wood: { 'fill-color': c.wood },
+            landuse_residential: { 'fill-color': c.residential },
+            water: { 'fill-color': c.water },
+            waterway: { 'line-color': c.waterway },
+            building: { 'fill-color': c.building, 'fill-outline-color': c.buildingOutline },
+            highway_path: { 'line-color': c.path, 'line-opacity': 1 },
+            highway_minor: { 'line-color': c.roadMinor, 'line-opacity': 1 },
+            highway_major_casing: { 'line-color': c.roadCasing },
+            highway_major_inner: { 'line-color': c.roadMajor },
+            highway_major_subtle: { 'line-color': c.roadSubtle },
+            highway_motorway_casing: { 'line-color': c.roadCasing },
+            highway_motorway_inner: { 'line-color': c.roadMajor },
+            highway_motorway_subtle: { 'line-color': c.roadSubtle },
+            highway_motorway_bridge_casing: { 'line-color': c.roadCasing },
+            highway_motorway_bridge_inner: { 'line-color': c.roadMajor },
+            tunnel_motorway_casing: { 'line-color': c.roadCasing },
+            tunnel_motorway_inner: { 'line-color': c.tunnel },
+            railway: { 'line-color': c.rail }, railway_transit: { 'line-color': c.rail },
+            railway_service: { 'line-color': c.rail }, railway_minor: { 'line-color': c.rail },
+            railway_dashline: { 'line-color': c.railDash }, railway_transit_dashline: { 'line-color': c.railDash },
+            railway_service_dashline: { 'line-color': c.railDash }, railway_minor_dashline: { 'line-color': c.railDash },
+            boundary_3: { 'line-color': c.boundary }, boundary_2: { 'line-color': c.boundary },
+            boundary_state: { 'line-color': c.boundary }, boundary_disputed: { 'line-color': c.boundary },
+            'boundary_country_z0-4': { 'line-color': c.boundary }, 'boundary_country_z5-': { 'line-color': c.boundary }
+        };
+    }
+
+    function applyBrandPalette(style, theme) {
+        const c = MAP_PALETTES[theme];
+        const rules = paintRulesFor(c);
+        style.layers.forEach(layer => {
+            layer.paint = layer.paint || {};
+            if (rules[layer.id]) Object.assign(layer.paint, rules[layer.id]);
+            if (layer.type !== 'symbol') return;
+            const src = layer['source-layer'];
+            if (src === 'transportation_name') {
+                Object.assign(layer.paint, { 'text-color': c.roadLabel, 'text-halo-color': c.roadLabelHalo });
+            } else if (src === 'place') {
+                Object.assign(layer.paint, { 'text-color': c.placeLabel, 'text-halo-color': c.placeHalo });
+            } else if (src === 'water_name' || src === 'waterway') {
+                Object.assign(layer.paint, { 'text-color': c.waterLabel, 'text-halo-color': c.placeHalo });
+            }
+        });
+        return style;
+    }
+
+    const brandStyleCache = {};
+    async function loadBrandStyle(theme) {
+        if (!brandStyleCache[theme]) {
+            const res = await fetch(OFM_STYLE_URLS[theme]);
+            if (!res.ok) throw new Error('OpenFreeMap style ' + res.status);
+            brandStyleCache[theme] = applyBrandPalette(await res.json(), theme);
+        }
+        // Kopie: MapLibre darf das gecachte Objekt nicht verändern
+        return JSON.parse(JSON.stringify(brandStyleCache[theme]));
+    }
+
+    function currentMapTheme() {
+        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    }
+
+    // Wird beim Hinzufügen des Layers (Start, Zurück aus Satellit) und bei Theme-Wechsel aufgerufen
+    async function applyMapTheme() {
+        if (!isVectorBase || !layerOSM._map) return;
+        const theme = currentMapTheme();
+        try {
+            const style = await loadBrandStyle(theme);
+            const gl = layerOSM.getMaplibreMap();
+            if (gl && currentMapTheme() === theme) gl.setStyle(style);
+        } catch (e) {
+            console.warn('Kartenstil konnte nicht geladen werden', e);
+        }
+    }
+
+    const OSM_ATTRIBUTION = '<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> | Loocator by <a href="https://mineco.de" target="_blank" rel="noopener">Adam Weiß</a>';
+
+    let isVectorBase = false;
+    let layerOSM;
+    function createBaseLayer() {
+        if (typeof L.maplibreGL === 'function' && typeof maplibregl !== 'undefined') {
+            try {
+                // Platzhalter-Style (nur Hintergrundfarbe), der echte Style kommt per applyMapTheme()
+                const placeholder = { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': MAP_PALETTES[currentMapTheme()].background } }] };
+                const vec = L.maplibreGL({ style: placeholder, attribution: OSM_ATTRIBUTION });
+                isVectorBase = true;
+                vec.on('add', applyMapTheme);
+                return vec;
+            } catch (e) {
+                console.warn('Vektorkarte nicht verfügbar, nutze Raster-Fallback', e);
+            }
+        }
+        // Fallback (kein WebGL / Bibliothek nicht geladen): OSM-Standardkacheln, Farben per CSS-Filter (styles.css)
+        isVectorBase = false;
+        return L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors | Loocator by <a href="https://mineco.de" target="_blank" rel="noopener">Adam Weiß</a>',
+            className: 'osm-tiles'
+        });
+    }
+    layerOSM = createBaseLayer();
     const layerSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri'
     });
