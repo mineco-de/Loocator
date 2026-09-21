@@ -50,7 +50,12 @@ body {
 .bottom-sheet {
     z-index: 50;
     transition: transform 0.3s ease-in-out;
-    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    /* Unterkante trägt die sticky CTA-Zeile (.sheet-actions) inkl. Safe-Area */
+    padding-bottom: 0;
+}
+
+.sheet-actions {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 }
 
 .ui-layer { 
@@ -67,12 +72,84 @@ body {
     border: none !important;
 }
 
-html.dark .leaflet-tile { 
-    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); 
+/* --- Kachel-Harmonisierung (nur CSS, Tile-Quelle bleibt HOT/OSM) ---
+   Zieht die HOT-Farben Richtung Markenpalette: weniger Grün/Braun, wärmer.
+   Zum Nachjustieren nur diese beiden Variablen ändern. Gefiltert wird der
+   Layer-Container (.osm-tiles), nicht jede Kachel einzeln - der Satelliten-Layer
+   hat die Klasse nicht und bleibt unberührt. */
+:root {
+    --tile-filter-light: saturate(0.75) brightness(1.05) sepia(0.08) hue-rotate(-5deg);
+    /* Dark: erst klassisch invertieren, dann Richtung Deep-Teal wärmen/entsättigen */
+    --tile-filter-dark: invert(100%) hue-rotate(180deg) brightness(102%) contrast(92%) saturate(0.7) sepia(0.12);
 }
 
-html.dark #map.is-sat-mode .leaflet-tile {
-    filter: none;
+.leaflet-layer.osm-tiles {
+    filter: var(--tile-filter-light);
+}
+
+html.dark .leaflet-layer.osm-tiles {
+    filter: var(--tile-filter-dark);
+}
+
+/* --- Pins: ein Tropfen für alle Kategorien ---
+   Leaflet gibt jedem <svg> in der Map-Pane z-index:200 (.leaflet-map-pane svg) -
+   ohne explizite z-index-Kette würde die Pin-Form das Icon überdecken. */
+.loo-pin {
+    position: relative;
+    width: 40px;
+    height: 52px;
+}
+.loo-pin .loo-pin-shape {
+    position: absolute;
+    left: 2px;
+    top: 4px;
+    z-index: 1;
+    filter: drop-shadow(0 2px 2px rgba(12, 37, 33, 0.35));
+}
+.loo-pin .loo-pin-icon {
+    position: absolute;
+    left: 11px;
+    top: 13px;
+    width: 18px;
+    height: 18px;
+    z-index: 2;
+    pointer-events: none;
+}
+.loo-pin .loo-badge {
+    position: absolute;
+    right: -1px;
+    top: 0;
+    z-index: 3;
+    filter: drop-shadow(0 1px 1px rgba(12, 37, 33, 0.3));
+}
+
+/* --- Cluster: Creme-Kreis, Teal-Rand, Teal-Zahl --- */
+.loo-cluster {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    background: #FAF6EE;
+    border: 2.5px solid #0d9488;
+    color: #0f766e;
+    font-weight: 800;
+    font-size: 15px;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(12, 37, 33, 0.3);
+}
+.loo-cluster .loo-badge {
+    position: absolute;
+    right: -6px;
+    top: -6px;
+    z-index: 3;
+}
+html.dark .loo-cluster {
+    background: #10302b;
+    color: #5eead4;
+    border-color: #2dd4bf;
 }
 
 /* Animation für die neuen Toast-Notifications */

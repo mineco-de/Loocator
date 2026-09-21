@@ -70,7 +70,7 @@
         <!-- Moderne Suche mit integriertem Menü-Button (Google-Maps-Stil) -->
         <div class="relative flex flex-col">
             <div class="flex items-center gap-2">
-                <button id="btn-open-menu" class="shrink-0 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 p-3.5 rounded-full shadow-md active:scale-95 transition-all duration-200 flex items-center justify-center border border-gray-200 dark:border-gray-600">
+                <button id="btn-open-menu" class="shrink-0 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 p-3.5 rounded-full shadow-md active:scale-95 transition-all duration-200 flex items-center justify-center border border-cream-200 dark:border-deep-600">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
@@ -79,17 +79,17 @@
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <img src="img/search.svg" alt="Search" class="w-4 h-4 opacity-40 dark:invert">
                     </div>
-                    <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder" class="w-full bg-white dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-600 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-700/40 rounded-full py-3.5 pl-11 pr-4 text-base sm:text-sm font-medium transition-all outline-none shadow-md" autocomplete="off">
+                    <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder" class="w-full bg-cream dark:bg-deep-800 dark:text-white border border-cream-200 dark:border-deep-600 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-700/40 rounded-full py-3.5 pl-11 pr-4 text-base sm:text-sm font-medium transition-all outline-none shadow-md" autocomplete="off">
                 </form>
             </div>
-            <ul id="search-suggestions" class="hidden absolute top-full left-[3.25rem] w-[calc(100%-3.25rem)] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-xl rounded-2xl mt-2 max-h-48 overflow-y-auto z-50 text-sm"></ul>
+            <ul id="search-suggestions" class="hidden absolute top-full left-[3.25rem] w-[calc(100%-3.25rem)] bg-white dark:bg-deep-700 border border-cream-200 dark:border-deep-600 shadow-xl rounded-2xl mt-2 max-h-48 overflow-y-auto z-50 text-sm"></ul>
         </div>
 
         <!-- Hauptfilter: Favoriten, Öffentlich, Eurokey+Rollstuhl, Wickeltisch, Kostenlos -->
-        <div class="flex gap-2 pt-1 pb-1 w-full overflow-x-auto snap-x snap-mandatory hide-scrollbar fade-scroll-x -mx-5 px-9">
+        <div class="flex gap-2 pt-1 pb-1 overflow-x-auto snap-x snap-mandatory hide-scrollbar fade-scroll-x -mx-5 px-9">
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-favorites" class="peer sr-only">
-                <div class="px-4 py-2.5 rounded-full border border-accent-100 dark:border-accent-600/40 bg-white dark:bg-gray-800 text-accent-500 dark:text-accent-400 text-xs font-bold transition-all peer-checked:bg-accent-600 peer-checked:text-white peer-checked:border-accent-600 shadow-md flex items-center gap-1.5 whitespace-nowrap ml-3">
+                <div class="px-4 py-2.5 rounded-full border border-accent-100 dark:border-accent-600/40 bg-cream dark:bg-deep-800 text-accent-500 dark:text-accent-400 text-xs font-bold transition-all peer-checked:bg-accent-600 peer-checked:text-white peer-checked:border-accent-600 shadow-md flex items-center gap-1.5 whitespace-nowrap ml-3">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 20s-8-5.5-8-11a4.5 4.5 0 018-2.5A4.5 4.5 0 0120 9c0 5.5-8 11-8 11z"/></svg>
                     <span data-i18n="filterFav"></span>
                 </div>
@@ -97,7 +97,7 @@
 
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-public" class="peer sr-only" checked>
-                <div class="px-4 py-2.5 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-brand-700 peer-checked:text-white peer-checked:border-brand-700 shadow-md whitespace-nowrap flex items-center gap-1.5">
+                <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-brand-700 peer-checked:text-white peer-checked:border-brand-700 shadow-md whitespace-nowrap flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h9a1 1 0 0 1 1 1v3H6V3a1 1 0 0 1 1-1z"/><path d="M5 8h15a1 1 0 0 1 1 1v.5a2 2 0 0 1-1.3 1.87V13a6.7 6.7 0 0 1-6.7 6.7h-.5A6.7 6.7 0 0 1 5.3 13v-1.63A2 2 0 0 1 4 9.5V9a1 1 0 0 1 1-1z"/></svg>
                     <span data-i18n="filterPublic"></span>
                 </div>
@@ -105,7 +105,7 @@
 
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-eurokey" class="peer sr-only" checked>
-                <div class="px-4 py-2.5 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-eurokey peer-checked:text-gray-900 peer-checked:border-eurokey shadow-md whitespace-nowrap flex items-center gap-1.5">
+                <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-eurokey peer-checked:text-gray-900 peer-checked:border-eurokey shadow-md whitespace-nowrap flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"/></svg>
                     <span data-i18n="filterEurokey"></span>
                 </div>
@@ -113,7 +113,7 @@
 
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-changing" class="peer sr-only">
-                <div class="px-4 py-2.5 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 shadow-md whitespace-nowrap flex items-center gap-1.5">
+                <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 shadow-md whitespace-nowrap flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M6.5 20v-2.5a5.5 5.5 0 0111 0V20"/></svg>
                     <span data-i18n="filterChanging"></span>
                 </div>
@@ -121,7 +121,7 @@
 
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-free" class="peer sr-only">
-                <div class="px-4 py-2.5 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-green-700 peer-checked:text-white peer-checked:border-green-700 shadow-md whitespace-nowrap flex items-center gap-1.5">
+                <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-green-700 peer-checked:text-white peer-checked:border-green-700 shadow-md whitespace-nowrap flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="8" y1="8" x2="16" y2="16"/></svg>
                     <span data-i18n="filterFree"></span>
                 </div>
@@ -129,31 +129,31 @@
 
             <!-- Reduziert die Zahl der auf einen Blick sichtbaren Entscheidungen (siehe Design-Kritik: kognitive
                  Überladung durch bis zu 8 gleichzeitig sichtbare Filter-Pillen) -->
-            <button id="btn-toggle-more-filters" type="button" aria-expanded="false" class="shrink-0 snap-start px-3 py-2.5 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 shadow-md flex items-center justify-center transition-transform">
+            <button id="btn-toggle-more-filters" type="button" aria-expanded="false" class="shrink-0 snap-start px-3 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-500 dark:text-gray-400 shadow-md flex items-center justify-center transition-transform">
                 <svg class="w-4 h-4 transition-transform" id="icon-more-filters" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
             </button>
         </div>
 
         <!-- Unterfilter: Jetzt offen, Hohe Erfolgsrate, Unzuverlässige ausblenden - eingeklappt per Default -->
         <div id="secondary-filters" class="hidden flex-col gap-2">
-        <div class="flex gap-2 pt-1 pb-1 w-full overflow-x-auto snap-x snap-mandatory hide-scrollbar fade-scroll-x -mx-5 px-9">
+        <div class="flex gap-2 pt-1 pb-1 overflow-x-auto snap-x snap-mandatory hide-scrollbar fade-scroll-x -mx-5 px-9">
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-open" class="peer sr-only">
-                <div class="px-4 py-2.5 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-green-700 peer-checked:text-white peer-checked:border-green-700 shadow-md whitespace-nowrap flex items-center gap-1.5 ml-3">
+                <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-green-700 peer-checked:text-white peer-checked:border-green-700 shadow-md whitespace-nowrap flex items-center gap-1.5 ml-3">
                     <span data-i18n="filterOpen"></span>
                 </div>
             </label>
 
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-success" class="peer sr-only">
-                <div class="px-4 py-2.5 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-success peer-checked:text-white peer-checked:border-success shadow-md whitespace-nowrap flex items-center gap-1.5">
+                <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-success peer-checked:text-white peer-checked:border-success shadow-md whitespace-nowrap flex items-center gap-1.5">
                     <span data-i18n="filterSuccess"></span>
                 </div>
             </label>
 
             <label class="cursor-pointer snap-start shrink-0">
                 <input type="checkbox" id="filter-nobad" class="peer sr-only">
-                <div class="px-4 py-2.5 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 shadow-md whitespace-nowrap flex items-center gap-1.5">
+                <div class="px-4 py-2.5 rounded-full border border-cream-200 dark:border-deep-600 bg-cream dark:bg-deep-800 text-gray-600 dark:text-gray-300 text-xs font-bold transition-all peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 shadow-md whitespace-nowrap flex items-center gap-1.5">
                     <span data-i18n="filterNoBad"></span>
                 </div>
             </label>
@@ -253,7 +253,7 @@
     </div>
     </div>
 
-    <div id="loading-spinner" class="hidden absolute bottom-44 right-4 w-11 h-11 bg-white dark:bg-gray-800 rounded-full shadow-lg ui-layer z-[900] flex items-center justify-center">
+    <div id="loading-spinner" class="hidden absolute bottom-44 right-4 w-11 h-11 bg-cream dark:bg-deep-800 rounded-full shadow-lg ui-layer z-[900] flex items-center justify-center">
         <svg class="animate-bounce h-6 w-6 text-brand-500" viewBox="0 0 24 24" fill="currentColor">
             <path d="M7 2h9a1 1 0 0 1 1 1v3H6V3a1 1 0 0 1 1-1z"/>
             <path d="M5 8h15a1 1 0 0 1 1 1v.5a2 2 0 0 1-1.3 1.87V13a6.7 6.7 0 0 1-6.7 6.7h-.5A6.7 6.7 0 0 1 5.3 13v-1.63A2 2 0 0 1 4 9.5V9a1 1 0 0 1 1-1z"/>
@@ -261,46 +261,46 @@
     </div>
 
     <!-- Layer Toggle (angehoben auf bottom-28) -->
-    <button id="btn-layer-toggle" aria-label="Layer" class="absolute bottom-28 right-4 w-11 h-11 bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300 rounded-full shadow-xl ui-layer transition-all active:scale-95 border border-gray-200 dark:border-gray-600 flex items-center justify-center">
+    <button id="btn-layer-toggle" aria-label="Layer" class="absolute bottom-28 right-4 w-11 h-11 bg-cream text-gray-600 dark:bg-deep-800 dark:text-gray-300 rounded-full shadow-xl ui-layer transition-all active:scale-95 border border-cream-200 dark:border-deep-600 flex items-center justify-center">
         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3z"/><path d="M4 12l8 4.5 8-4.5"/><path d="M4 16.5L12 21l8-4.5"/></svg>
     </button>
 
     <!-- Location Button (angehoben auf bottom-10) -->
-    <button id="btn-location" aria-label="Standort" class="absolute bottom-10 right-4 w-11 h-11 bg-white text-gray-600 dark:bg-gray-800 dark:text-brand-400 rounded-full shadow-xl ui-layer transition-all active:scale-95 border border-gray-200 dark:border-gray-600 flex items-center justify-center">
+    <button id="btn-location" aria-label="Standort" class="absolute bottom-10 right-4 w-11 h-11 bg-cream text-gray-600 dark:bg-deep-800 dark:text-brand-400 rounded-full shadow-xl ui-layer transition-all active:scale-95 border border-cream-200 dark:border-deep-600 flex items-center justify-center">
         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
     </button>
 
     <div id="map"></div>
 
-    <div id="empty-state" class="hidden absolute left-4 right-4 top-44 z-[30] mx-auto max-w-sm rounded-2xl bg-white/95 dark:bg-gray-800/95 px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-100 shadow-lg border border-gray-200 dark:border-gray-600 backdrop-blur-sm"></div>
+    <div id="empty-state" class="hidden absolute left-4 right-4 top-44 z-[30] mx-auto max-w-sm rounded-2xl bg-white/95 dark:bg-gray-800/95 px-4 py-3 text-center text-xs font-bold text-gray-700 dark:text-gray-100 shadow-lg border border-cream-200 dark:border-deep-600 backdrop-blur-sm"></div>
 
-    <div id="bottom-sheet" class="bottom-sheet fixed bottom-0 left-0 right-0 w-full md:max-w-lg md:mx-auto md:mb-4 bg-white dark:bg-gray-800 rounded-t-3xl md:rounded-3xl shadow-[0_-5px_25px_rgba(0,0,0,0.3)] md:shadow-2xl p-6 transform translate-y-full max-h-[85vh] flex flex-col transition-transform duration-300 touch-pan-y">
-        <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-4 cursor-pointer" id="btn-close-sheet"></div>
+    <div id="bottom-sheet" class="bottom-sheet fixed bottom-0 left-0 right-0 w-full md:max-w-lg md:mx-auto md:mb-4 bg-cream dark:bg-deep-800 text-stone-800 dark:text-teal-50 rounded-t-3xl md:rounded-3xl shadow-[0_-5px_25px_rgba(12,37,33,0.28)] md:shadow-2xl p-6 transform translate-y-full max-h-[85vh] flex flex-col transition-transform duration-300 touch-pan-y">
+        <div class="w-12 h-1.5 bg-cream-200 dark:bg-deep-500 rounded-full mx-auto mb-4 cursor-pointer" id="btn-close-sheet"></div>
         
         <div class="flex justify-between items-start mb-1">
             <h2 id="sheet-title" class="text-2xl font-display font-bold"></h2>
             <button id="btn-fav" class="active:scale-90 transition-transform pl-4 shrink-0">
-                <svg id="btn-fav-icon" class="w-7 h-7 text-gray-300 dark:text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-8-5.5-8-11a4.5 4.5 0 018-2.5A4.5 4.5 0 0120 9c0 5.5-8 11-8 11z"/></svg>
+                <svg id="btn-fav-icon" class="w-7 h-7 text-stone-300 dark:text-deep-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-8-5.5-8-11a4.5 4.5 0 018-2.5A4.5 4.5 0 0120 9c0 5.5-8 11-8 11z"/></svg>
             </button>
         </div>
         
         <div id="routing-warning" class="hidden bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-xs font-bold p-2 rounded-xl mb-2 mt-1" data-i18n="routeWarning"></div>
 
         <p id="sheet-distance" class="text-sm font-bold text-brand-600 dark:text-brand-400 mb-2"></p>
-        <h3 id="sheet-subtitle" class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-1 hidden"></h3>
-        <p id="sheet-address" class="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 hidden"></p>
+        <h3 id="sheet-subtitle" class="text-md font-semibold text-stone-700 dark:text-teal-100 mb-1 hidden"></h3>
+        <p id="sheet-address" class="text-sm font-medium text-stone-600 dark:text-teal-100/80 mb-2 hidden"></p>
         
-        <div id="sheet-note" class="hidden mb-3 bg-brand-50 dark:bg-brand-900 rounded-xl p-3 flex items-start gap-2.5">
+        <div id="sheet-note" class="hidden mb-3 bg-brand-50 dark:bg-deep-700 rounded-xl p-3 flex items-start gap-2.5">
             <svg class="w-4 h-4 shrink-0 mt-0.5 text-brand-500 dark:text-brand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
             <span class="text-sm text-brand-800 dark:text-brand-50 leading-snug"></span>
         </div>
         
-        <p id="sheet-info" class="text-sm text-gray-500 dark:text-gray-400 mb-5 leading-relaxed"></p>
+        <p id="sheet-info" class="text-sm text-stone-500 dark:text-teal-100/70 mb-5 leading-relaxed"></p>
 
-        <div id="feedback-section" class="bg-gray-50 dark:bg-gray-700 rounded-2xl p-5 mb-5 border border-gray-100 dark:border-gray-600 shadow-inner transition-opacity duration-300 relative overflow-hidden">
+        <div id="feedback-section" class="bg-cream-100 dark:bg-deep-700 rounded-2xl p-5 mb-5 border border-cream-200 dark:border-deep-600 shadow-inner transition-opacity duration-300 relative overflow-hidden">
             <!-- Proaktiver Hinweis statt reaktivem "Verboten"-Overlay: zeigt die tatsächliche
                  Distanz, bevor der Nutzer überhaupt versucht zu bewerten (Design-Kritik P0) -->
-            <div id="vote-distance-hint" class="hidden bg-brand-50 dark:bg-brand-900 rounded-xl p-4 mb-2 flex items-center gap-3">
+            <div id="vote-distance-hint" class="hidden bg-brand-50 dark:bg-deep-800 rounded-xl p-4 mb-2 flex items-center gap-3">
                 <svg class="w-6 h-6 shrink-0 text-brand-500 dark:text-brand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11.5A7 7 0 0119 9.5C19 14.5 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
                 <span class="text-sm font-medium text-brand-800 dark:text-brand-50 leading-snug"></span>
             </div>
@@ -314,7 +314,7 @@
                     <button id="btn-usable-yes" data-i18n="btnYes" class="flex-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 py-3 rounded-xl font-bold transition-opacity"></button>
                     <button id="btn-usable-no" data-i18n="btnNo" class="flex-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 py-3 rounded-xl font-bold transition-opacity"></button>
                 </div>
-                <div id="stat-usable" class="text-xs mt-2 text-gray-500 dark:text-gray-400 font-medium"></div>
+                <div id="stat-usable" class="text-xs mt-2 text-stone-500 dark:text-teal-100/70 font-medium"></div>
             </div>
 
             <div>
@@ -337,12 +337,12 @@
                     </button>
                 </div>
                 
-                <div id="stat-clean" class="text-xs mt-2 text-gray-500 dark:text-gray-400 font-medium"></div>
+                <div id="stat-clean" class="text-xs mt-2 text-stone-500 dark:text-teal-100/70 font-medium"></div>
             </div>
             </div>
             <!-- Der kleine Rang-Indikator direkt unter den Sternen - bleibt sichtbar, auch wenn
                  der Nutzer gerade zu weit weg zum Bewerten ist -->
-            <div class="mt-5 pt-4 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
+            <div class="mt-5 pt-4 border-t border-cream-200 dark:border-deep-600 flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <div id="karma-badge" class="w-9 h-9 shrink-0 drop-shadow-sm"></div>
                     <div class="flex flex-col leading-tight">
@@ -359,21 +359,21 @@
         </div>
 
         <!-- NEUES KOMPAKTES BUTTON LAYOUT -->
-        <div class="flex gap-2 pb-4 pt-2">
+        <div id="sheet-actions" class="sheet-actions sticky bottom-0 z-10 flex gap-2 pt-3 -mx-6 px-6 bg-cream dark:bg-deep-800">
             <!-- Navigieren (3/6) -->
-            <button id="btn-navigate" class="flex-[3] bg-brand-600 text-white font-bold py-3.5 rounded-2xl text-base active:bg-brand-800 transition-colors shadow-lg flex items-center justify-center gap-2">
+            <button id="btn-navigate" class="flex-[3] bg-brand-600 text-white font-bold py-3.5 rounded-full text-base active:bg-brand-800 transition-colors shadow-lg flex items-center justify-center gap-2">
                 <img src="img/route.svg" alt="" class="w-5 h-5 filter brightness-0 invert">
                 <span data-i18n="btnNav"></span>
             </button>
             
             <!-- Teilen (2/6) -->
-            <button id="btn-share" class="flex-[2] bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-bold py-3.5 rounded-2xl text-base active:bg-gray-200 dark:active:bg-gray-600 transition-colors shadow-sm flex items-center justify-center gap-2 border border-gray-200 dark:border-gray-600">
+            <button id="btn-share" class="flex-[2] bg-cream-100 dark:bg-deep-700 text-stone-800 dark:text-teal-50 font-bold py-3.5 rounded-full text-base active:bg-cream-200 dark:active:bg-deep-600 transition-colors shadow-sm flex items-center justify-center gap-2 border border-cream-200 dark:border-deep-600">
                 <img src="img/share.svg" alt="" class="w-5 h-5 dark:invert">
                 <span data-i18n="btnShare"></span>
             </button>
 
             <!-- Melden (1/6 - Nur Icon) -->
-            <button id="btn-report-existing" class="flex-[1] bg-red-50 dark:bg-red-900/20 py-3.5 rounded-2xl active:bg-red-100 dark:active:bg-red-900/40 transition-colors shadow-sm flex items-center justify-center border border-red-100 dark:border-red-900/50" data-i18n-title="btnReportExisting">
+            <button id="btn-report-existing" class="flex-[1] bg-red-50 dark:bg-red-900/20 py-3.5 rounded-full active:bg-red-100 dark:active:bg-red-900/40 transition-colors shadow-sm flex items-center justify-center border border-red-100 dark:border-red-900/50" data-i18n-title="btnReportExisting">
                 <img src="img/report.svg" alt="" class="w-[22px] h-[22px]" style="filter: invert(30%) sepia(80%) saturate(3000%) hue-rotate(345deg) brightness(95%) contrast(100%);">
             </button>
         </div>

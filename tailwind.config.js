@@ -43,6 +43,11 @@ module.exports = {
         // teal-700 statt teal-600, da weißer Text auf teal-600 nur 3.74:1 Kontrast
         // erreicht (WCAG AA verlangt 4.5:1) - siehe Kritik-Runde 2.
         success: colors.teal[700],
+        // Warmes Creme der Landingpage (loocator.org) für Bottom-Sheet & Filter-Pillen
+        // im hellen Modus.
+        cream: { DEFAULT: '#FAF6EE', 100: '#F3ECDD', 200: '#E6DCC6' },
+        // Tiefes, teal-getöntes Dunkel statt Navy/Slate für den Dark Mode.
+        deep: { 500: '#2c5c53', 600: '#22483f', 700: '#163a34', 800: '#10302b', 900: '#0c2521' },
       },
     },
   },

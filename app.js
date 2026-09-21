@@ -246,10 +246,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const ICONS = {
         public:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 2h9a1 1 0 0 1 1 1v3H6V3a1 1 0 0 1 1-1z"/><path d="M5 8h15a1 1 0 0 1 1 1v.5a2 2 0 0 1-1.3 1.87V13a6.7 6.7 0 0 1-6.7 6.7h-.5A6.7 6.7 0 0 1 5.3 13v-1.63A2 2 0 0 1 4 9.5V9a1 1 0 0 1 1-1z"/></svg>',
         eurokey:  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"/></svg>',
-        changing: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2" fill="white" stroke="none"/><path d="M9.3 8.7c.5.9 1.4 1.3 2.7 1.3s2.2-.4 2.7-1.3" stroke="#0d9488"/><path d="M6.5 20v-2.5a5.5 5.5 0 0111 0V20"/></svg>',
+        changing: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2" fill="white" stroke="none"/><path d="M9.3 8.7c.5.9 1.4 1.3 2.7 1.3s2.2-.4 2.7-1.3" stroke="#a855f7"/><path d="M6.5 20v-2.5a5.5 5.5 0 0111 0V20"/></svg>',
         favorite: '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 20.5S4 15.5 4 9.5C4 7.3 5.8 5.5 8 5.5C9.5 5.5 10.8 6.4 12 8C13.2 6.4 14.5 5.5 16 5.5C18.2 5.5 20 7.3 20 9.5C20 15.5 12 20.5 12 20.5Z"/></svg>',
-        free:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="white" stroke-width="2"/><path d="M8 8L16 16" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>',
-        defect:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 6L18 18" stroke="white" stroke-width="2.4" stroke-linecap="round"/><path d="M18 6L6 18" stroke="white" stroke-width="2.4" stroke-linecap="round"/></svg>'
+        free:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="white" stroke-width="2"/><path d="M8 8L16 16" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>'
     };
 
     // Muss mit den Farb-Tokens in tailwind.config.js (brand/accent/eurokey/changing/
@@ -264,32 +263,42 @@ document.addEventListener("DOMContentLoaded", () => {
         defect:     '#9ca3af'
     };
 
-    // statusDots: Array von Farben, die als kleine Punkte OBEN am Pin überfließend sitzen sollen
-    function buildPinIcon(priorityKey, statusDots = [], isDefectMode = false) {
+    // Status-Badge oben rechts am Pin (nur EIN Status, höchste Priorität gewinnt):
+    // defect > topRated > 24/7. Glyphen sind bewusst winzig - der Pin bleibt ruhig.
+    const STATUS_BADGES = {
+        defect:   { color: '#dc2626', glyph: '<path d="M8 4.6V8.6" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="11.2" r="1" fill="white"/>' },
+        topRated: { color: '#0f766e', glyph: '<path d="M8 3.6l1.3 2.7 2.9.4-2.1 2.1.5 2.9L8 10.3l-2.6 1.4.5-2.9L3.8 6.7l2.9-.4L8 3.6z" fill="white"/>' },
+        open247:  { color: '#16a34a', glyph: '<circle cx="8" cy="8" r="3.6" stroke="white" stroke-width="1.5" fill="none"/><path d="M8 6v2.2l1.4.9" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' }
+    };
+
+    function getStatusKey({ isDefect, isTopRated, is247 }) {
+        if (isDefect) return 'defect';
+        if (isTopRated) return 'topRated';
+        if (is247) return 'open247';
+        return null;
+    }
+
+    function buildStatusBadge(statusKey, sizePx) {
+        const badge = STATUS_BADGES[statusKey];
+        if (!badge) return '';
+        return '<svg class="loo-badge" width="' + sizePx + '" height="' + sizePx + '" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+            '<circle cx="8" cy="8" r="7.2" fill="' + badge.color + '" stroke="white" stroke-width="1.6"/>' + badge.glyph + '</svg>';
+    }
+
+    // Ein einheitlicher Tropfen-Pin: Füllfarbe = Kategorie, Icon im Pin, Status als Badge.
+    // Defekt: Pin wird grau (Kategorie-Icon bleibt), Badge zeigt das rote Ausrufezeichen.
+    function buildPinIcon(priorityKey, statusKey = null, isDefectMode = false) {
         const color = isDefectMode ? PRIO_COLORS.defect : PRIO_COLORS[priorityKey];
-        const iconSvg = isDefectMode ? ICONS.defect : ICONS[priorityKey];
-        const dashArray = isDefectMode ? 'stroke-dasharray="4 2"' : '';
+        const iconSvg = ICONS[priorityKey];
         const iconDataUrl = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(iconSvg);
 
-        // Punkte sitzen als Reihe OBERHALB des Pins (überfließend über den oberen Rand)
-        const dotsHtml = statusDots.slice(0, 4).map((dotColor) => {
-            return '<div style="width:16px; height:16px; border-radius:50%; background:' + dotColor + '; border:2.5px solid white; box-shadow:0 1px 3px rgba(0,0,0,0.4); flex-shrink:0;"></div>';
-        }).join('');
-
         return '' +
-            '<div style="position:relative; width:44px; height:68px;">' +
-                '<div style="position:absolute; top:0; left:0; width:100%; display:flex; justify-content:center; gap:3px; z-index:20;">' +
-                    dotsHtml +
-                '</div>' +
-                '<div style="position:absolute; bottom:0; left:0; width:44px; height:56px; z-index:10; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.3));">' +
-                    '<svg width="44" height="56" viewBox="0 0 44 56" xmlns="http://www.w3.org/2000/svg" style="position:absolute; top:0; left:0;">' +
-                        '<path d="M22 2 C10 2 2 10 2 21 C2 34 22 54 22 54 C22 54 42 34 42 21 C42 10 34 2 22 2 Z" fill="white" stroke="' + color + '" stroke-width="2" ' + dashArray + '/>' +
-                        '<circle cx="22" cy="21" r="14" fill="' + color + '"/>' +
-                    '</svg>' +
-                    '<div style="position:absolute; top:3px; left:0; width:44px; height:44px; z-index:11; display:flex; justify-content:center; align-items:center; overflow:hidden;">' +
-                        '<img src="' + iconDataUrl + '" alt="" style="width:18px; height:18px; display:block; pointer-events:none;">' +
-                    '</div>' +
-                '</div>' +
+            '<div class="loo-pin">' +
+                '<svg class="loo-pin-shape" width="36" height="46" viewBox="0 0 36 46" xmlns="http://www.w3.org/2000/svg">' +
+                    '<path d="M18 2C9.2 2 2.5 8.6 2.5 17c0 6.2 3.6 11.3 8.2 16.6 3.2 3.7 6.2 7.6 7.3 10.4 1.1-2.8 4.1-6.7 7.3-10.4 4.6-5.3 8.2-10.4 8.2-16.6C33.5 8.6 26.8 2 18 2z" fill="' + color + '" stroke="white" stroke-width="2" stroke-linejoin="round"/>' +
+                '</svg>' +
+                '<img class="loo-pin-icon" src="' + iconDataUrl + '" alt="">' +
+                buildStatusBadge(statusKey, 16) +
             '</div>';
     }
 
@@ -327,31 +336,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const children = cluster.getAllChildMarkers();
             let hasTopRated = false;
             let hasOpen247 = false;
-            let hasChanging = false;
             let hasDefect = false;
-            
+
             children.forEach(marker => {
                 if (marker.options.isTopRated) hasTopRated = true;
                 if (marker.options.is247) hasOpen247 = true;
-                if (marker.options.hasChanging) hasChanging = true;
                 if (marker.options.isDefect) hasDefect = true;
             });
 
-            let indicatorsHtml = '';
-            if (hasTopRated) indicatorsHtml += `<div class="w-2.5 h-2.5 bg-success rounded-full border border-white"></div>`;
-            if (hasOpen247) indicatorsHtml += `<div class="w-2.5 h-2.5 bg-green-500 rounded-full border border-white"></div>`;
-            if (hasChanging) indicatorsHtml += `<div class="w-2.5 h-2.5 bg-purple-500 rounded-full border border-white"></div>`;
-            if (hasDefect) indicatorsHtml += `<div class="w-2.5 h-2.5 bg-red-600 rounded-full border border-white"></div>`;
+            // Gleiche Badge-Logik wie beim einzelnen Pin (ein Status, höchste Priorität)
+            const statusKey = getStatusKey({ isDefect: hasDefect, isTopRated: hasTopRated, is247: hasOpen247 });
 
             return L.divIcon({
-                html: `
-                    <div class="relative flex items-center justify-center w-10 h-10 bg-brand-700 text-white font-bold rounded-full shadow-md border-2 border-white">
-                        <span>${childCount}</span>
-                        <div class="absolute -bottom-1.5 flex gap-0.5 justify-center w-full">
-                            ${indicatorsHtml}
-                        </div>
-                    </div>
-                `,
+                html: `<div class="loo-cluster"><span>${childCount}</span>${buildStatusBadge(statusKey, 16)}</div>`,
                 className: 'custom-cluster-icon bg-transparent',
                 iconSize: L.point(40, 40)
             });
@@ -1066,22 +1063,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if (reqNoBad && isBad) return;
             const is247 = ToiletRules.isOpen247(tags);
 
-            // --- GOOGLE-MAPS-STYLE: Pin-Farbe nach Priorität + Status-Punkte oben überfließend ---
+            // --- Pin-Farbe nach Priorität + Status-Badge oben rechts ---
             const priorityKey = ToiletRules.getPriorityKey(tags, savedFavs.includes(toilet.id));
 
-            let statusDots = [];
-            if (priorityKey !== 'eurokey' && isEurokeyOrWheelchair) statusDots.push(PRIO_COLORS.eurokey);
-            if (priorityKey !== 'changing' && hasChanging) statusDots.push(PRIO_COLORS.changing);
-            if (priorityKey !== 'free' && isFree) statusDots.push(PRIO_COLORS.free);
-            if (priorityKey !== 'favorite' && savedFavs.includes(toilet.id)) statusDots.push(PRIO_COLORS.favorite);
-
-            const iconHtml = buildPinIcon(priorityKey, statusDots, isDefect);
+            const statusKey = getStatusKey({ isDefect, isTopRated, is247 });
+            const iconHtml = buildPinIcon(priorityKey, statusKey, isDefect);
 
             const customIcon = L.divIcon({
                 className: 'google-style-pin bg-transparent',
                 html: iconHtml,
-                iconSize: [44, 68],
-                iconAnchor: [22, 56]
+                iconSize: [40, 52],
+                iconAnchor: [20, 50]
             });
 
             const marker = L.marker([lat, lon], { 
@@ -1438,12 +1430,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const icon = document.getElementById('btn-fav-icon');
         if (favs.includes(currentToiletData.id)) {
             icon.setAttribute('fill', 'currentColor');
-            icon.classList.remove('text-gray-300', 'dark:text-gray-500');
-            icon.classList.add('text-accent-500');
+            icon.classList.remove('text-stone-300', 'dark:text-deep-500');
+            icon.classList.add('text-brand-600', 'dark:text-brand-400');
         } else {
             icon.setAttribute('fill', 'none');
-            icon.classList.remove('text-accent-500');
-            icon.classList.add('text-gray-300', 'dark:text-gray-500');
+            icon.classList.remove('text-brand-600', 'dark:text-brand-400');
+            icon.classList.add('text-stone-300', 'dark:text-deep-500');
         }
     }
 
