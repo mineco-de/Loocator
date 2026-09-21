@@ -13,9 +13,16 @@ try {
     $stmt->execute();
     $deletedRateLimits = $stmt->rowCount();
 
+    // Overpass-Kachel-Cache (overpass.php): Dateien, die älter als das Stale-Limit (30 Tage) sind, werden
+    // nie mehr ausgeliefert - aufräumen. Lock-Dateien sind winzig und bleiben.
+    $deletedTiles = 0;
+    foreach (glob(__DIR__ . '/cache/overpass/*.json') ?: [] as $tile) {
+        if (filemtime($tile) < time() - 30 * 86400 && @unlink($tile)) $deletedTiles++;
+    }
+
     $db->exec("VACUUM"); // Platz freigeben, den SQLite intern verbraucht hat
 
-    echo date('Y-m-d H:i:s') . " - $deletedVotes alte Votes, $deletedRateLimits alte Rate-Limit-Einträge gelöscht.\n";
+    echo date('Y-m-d H:i:s') . " - $deletedVotes alte Votes, $deletedRateLimits alte Rate-Limit-Einträge, $deletedTiles alte Overpass-Kacheln gelöscht.\n";
 } catch (Exception $e) {
     echo "Fehler: " . $e->getMessage() . "\n";
 }

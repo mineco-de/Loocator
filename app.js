@@ -494,6 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentToiletData = null;
     let isTooFarToVote = false;
     let isFetching = false;
+    let refetchPending = false;
     let initialLoadComplete = false;
     let globalRatingsDb = {};
     let routingLine = null;
@@ -1029,9 +1030,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // bevor wir aufgeben. overpass.osm.ch liefert HTTP 200 aber nur Schweizer Daten - daher
     // NICHT als Mirror verwenden, sonst würde ein "erfolgreiches" leeres Ergebnis für jede
     // Anfrage außerhalb der Schweiz fälschlich als final akzeptiert.
+    // overpass.openstreetmap.fr ist zwar der schnellste, sendet aber keine CORS-Header und ist
+    // deshalb im Browser unbrauchbar; overpass.php (Server) fragt ihn direkt ab.
     const OVERPASS_MIRRORS = [
         'https://overpass-api.de/api/interpreter',
-        'https://overpass.openstreetmap.fr/api/interpreter',
         'https://overpass.kumi.systems/api/interpreter'
     ];
 
@@ -1040,7 +1042,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (const base of OVERPASS_MIRRORS) {
             try {
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 10000);
+                const timeout = setTimeout(() => controller.abort(), 20000);
                 // POST statt GET (von Overpass selbst für alles außer trivialen Anfragen
                 // empfohlen) - vermeidet außerdem, dass zwischengeschaltete CDNs/Proxys
                 // GET-Query-Strings anders cachen/behandeln als POST-Bodies.
@@ -1070,6 +1072,25 @@ document.addEventListener("DOMContentLoaded", () => {
         throw lastError;
     }
 
+    // Bevorzugter Weg: eigener Server (overpass.php) mit gemeinsamem Cache, schnellem Mirror und
+    // längeren Timeouts. Liefert dasselbe Format wie Overpass ({ elements: [...] }).
+    async function fetchToiletsFromBackend(bounds) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000);
+        try {
+            const qs = new URLSearchParams({
+                s: bounds.getSouth(), w: bounds.getWest(), n: bounds.getNorth(), e: bounds.getEast()
+            });
+            const res = await fetch('overpass.php?' + qs, { signal: controller.signal });
+            if (!res.ok) throw new Error(`Backend ${res.status}`);
+            const data = await res.json();
+            if (!data || !Array.isArray(data.elements)) throw new Error('Backend returned invalid data');
+            return data;
+        } finally {
+            clearTimeout(timeout);
+        }
+    }
+
     async function fetchToilets() {
         if (map.getZoom() < 12) {
             showEmptyState(t('zoomHint'));
@@ -1077,9 +1098,16 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (isFetching) return;
+        // Bewegt sich die Karte während eines (ggf. langen) Abrufs, würde der neue Ausschnitt
+        // sonst verworfen und bliebe leer - stattdessen genau einmal nachladen, sobald wir fertig sind.
+        if (isFetching) {
+            refetchPending = true;
+            return;
+        }
         isFetching = true;
         document.getElementById('loading-spinner').classList.remove('hidden');
+        // Erste Abfrage in einem neuen Gebiet kann dauern (Overpass): Nutzer kurz informieren.
+        const slowHintTimer = setTimeout(() => showToast(t('slowLoadHint'), 'info'), 8000);
 
         try {
             const dbRes = await fetch('backend.php?all=1');
@@ -1113,7 +1141,13 @@ document.addEventListener("DOMContentLoaded", () => {
             out center;
         `;
         try {
-            const data = await fetchOverpassWithFallback(query);
+            let data;
+            try {
+                data = await fetchToiletsFromBackend(bounds);
+            } catch (backendError) {
+                console.error('overpass.php failed, falling back to direct Overpass:', backendError);
+                data = await fetchOverpassWithFallback(query);
+            }
             allToilets = data.elements;
             saveCachedToiletsForBounds(cacheKey, allToilets);
             renderMarkers();
@@ -1128,9 +1162,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 showEmptyState(t('loadErrorHint'));
             }
         } finally {
+            clearTimeout(slowHintTimer);
             isFetching = false;
             document.getElementById('loading-spinner').classList.add('hidden');
             removeSplashScreen();
+            if (refetchPending) {
+                refetchPending = false;
+                fetchToilets();
+            }
         }
     }
 

@@ -2,3 +2,5 @@ loocator.sqlite
 node_modules/
 .claude/
 .impeccable/
+# Serverseitiger Overpass-Cache (overpass.php)
+cache/
