@@ -1,11 +1,14 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "org.loocator.app",
       "sha256_cert_fingerprints": [
-        "F1:88:CD:D0:FD:72:1A:02:B5:84:43:33:F6:1E:A0:DD:7F:AB:ED:75:22:DF:A0:66:8E:24:CB:41:2D:A5:BC:B4"
+        "F1:88:CD:D0:FD:72:1A:02:B5:84:43:33:F6:1E:A0:DD:7F:AB:ED:75:22:DF:A0:66:8E:24:CB:41:2D:A5:BC:B4",
+        "05:BC:1A:A1:80:92:2D:0A:FC:A0:A7:1B:E4:5D:7C:19:E2:53:03:24:A5:43:9E:6C:5E:41:D3:91:02:F2:BD:DF"
       ]
     }
   }
