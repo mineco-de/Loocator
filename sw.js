@@ -1,4 +1,4 @@
-const CACHE_NAME = 'loocator-cache-v19';
+const CACHE_NAME = 'loocator-cache-v20';
 const TILE_CACHE_NAME = 'loocator-tiles-v1';
 const TILE_CACHE_MAX_ENTRIES = 600;
 const OFFLINE_URLS = [
@@ -17,6 +17,9 @@ const OFFLINE_URLS = [
   'fonts/baloo2-latin-ext.woff2',
   'img/loocator.svg',
   'img/apple-touch-icon.png',
+  'img/icon-192.png',
+  'img/icon-512.png',
+  'img/icon-maskable-512.png',
   'img/map-tag.svg',
   'img/report.svg',
   'img/route.svg',
